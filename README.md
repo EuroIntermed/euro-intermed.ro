@@ -6,9 +6,12 @@ project. The AI chat widget is the single intake channel.
 ## Files
 
 - `index.html` - public page and semantic content.
+- `tos.html` - Terms and conditions, served at `/tos` (clean URL).
+- `privacy.html` - Privacy policy, served at `/privacy` (clean URL).
+- `data-deletion.html` - Data deletion request page, served at `/data-deletion`. Required by Facebook/Meta app integration; currently a manual (email-based) request flow.
 - `css/styles.css` - scoped visual system using `ei-` classes.
 - `js/main.js` - route selection, WhatsApp links, FAQ.
-- `vercel.json` - static deploy config (clean URLs + security headers).
+- `vercel.json` - static deploy config (clean URLs + redirects + security headers).
 
 The old PHP `form-handler.php` email form has been removed (Vercel does not run
 PHP). Lead capture now goes through the embedded AI widget mounted into
@@ -43,6 +46,7 @@ in the sites.
 
 ## Production notes
 
-- Privacy and terms links are placeholders and must be replaced before production.
+- Privacy, terms, and data-deletion copy are practical drafts and need a final legal review before production.
+- `/data-deletion` currently instructs users to email their deletion request. For the Facebook/Meta integration you can keep these instructions or wire a real data-deletion-request callback endpoint; either satisfies Meta's requirement.
 - The qualification flow intentionally does not ask for CUI/VAT, file uploads, target price, packing lists, photos, or full commercial terms at first contact.
 - PalletClearance is presented as a confidential B2B clearance flow, not as a public listing or price marketplace.
