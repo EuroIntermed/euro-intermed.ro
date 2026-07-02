@@ -27,22 +27,30 @@ Open `http://127.0.0.1:8080`.
 
 ## Deploy & Widget
 
-Deploy this folder directly as a static Vercel project (no build step). The
-widget is embedded before `</body>`:
+Deploy this folder as a Vercel project. `build.mjs` runs as the build command and
+templates the widget embed into `dist/` (which Vercel serves). The widget is
+embedded before `</body>`, inside `<!-- WIDGET:START -->` / `<!-- WIDGET:END -->`
+markers, with a `__WIDGET_BASE_URL__` placeholder:
 
 ```html
-<script src="https://staging.euro-intermed.com/widget.js" defer></script>
+<script src="__WIDGET_BASE_URL__/widget.js" defer></script>
 <script>
   window.AngrosistChat.init({ containerId: "ai-widget-container",
-    vertical: "angrosist", lang: "ro", privacyUrl: "/privacy.html" });
+    vertical: "angrosist", lang: "ro", privacyUrl: "/privacy" });
 </script>
 ```
+
+**The widget origin and visibility are NOT hardcoded — set these per Vercel project:**
+
+| Env var | Default | Purpose |
+|---|---|---|
+| `WIDGET_BASE_URL` | `https://dash.euro-intermed.com` | Origin serving `widget.js`. Set `https://dash.staging.euro-intermed.com` on the staging project. |
+| `WIDGET_ENABLED` | `true` | `false` removes the widget entirely from the page. |
 
 `widget.js` is served by the deployed frontend project. The backend API URL is
 **baked into `widget.js` at build time** from the frontend's `VITE_API_URL` — the
 site does not pass `apiUrl`. To repoint the backend, change `VITE_API_URL` in the
-frontend deploy and rebuild `widget.js`; all embeds follow. No URL is hardcoded
-in the sites.
+frontend deploy and rebuild `widget.js`; all embeds follow.
 
 ## Production notes
 
