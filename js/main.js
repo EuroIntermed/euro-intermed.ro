@@ -125,7 +125,7 @@
   function updateWhatsApp(route) {
     if (!whatsappLink) return;
     const config = routes[route] || routes["other-b2b-flow"];
-    whatsappLink.href = `https://wa.me/40765934455?text=${encodeURIComponent(config.whatsappText)}`;
+    whatsappLink.href = `https://wa.me/40745799995?text=${encodeURIComponent(config.whatsappText)}`;
     whatsappLink.textContent = config.whatsappLabel;
     if (whatsappHelper) whatsappHelper.textContent = config.whatsappHelper;
   }
@@ -245,7 +245,7 @@
       if (targetChannelInput) targetChannelInput.value = "";
       if (aiWidgetContainer) aiWidgetContainer.dataset.defaultRoute = "";
       if (whatsappLink) {
-        whatsappLink.href = "https://wa.me/40765934455";
+        whatsappLink.href = "https://wa.me/40745799995";
         whatsappLink.textContent = "Scrie-ne pe WhatsApp";
       }
       if (whatsappHelper) whatsappHelper.textContent = "Contactează Euro Intermed cu intenția deja completată.";
