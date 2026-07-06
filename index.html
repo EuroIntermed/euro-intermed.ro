@@ -698,7 +698,10 @@
         if (!window.AngrosistChat) return;
         window.AngrosistChat.init({
           containerId: "ai-widget-container",
-          vertical: "angrosist",
+          // Router vertical: the triage agent classifies the inbound need and
+          // re-routes the conversation into the concrete flow (buy/sell).
+          vertical: "euro-intermed",
+          intent: "triage",
           lang: "ro",
           privacyUrl: "/privacy"
         });
