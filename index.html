@@ -696,10 +696,11 @@
       // single source of truth. The widget ORIGIN comes from WIDGET_BASE_URL.
       window.addEventListener("DOMContentLoaded", function () {
         if (!window.AngrosistChat) return;
+        // No containerId → floating launcher button (bottom-right), same setup as
+        // angrosist.ro / pallet-clearance.eu. Router vertical: the triage agent
+        // classifies the inbound need and re-routes the conversation into the
+        // concrete flow (angrosist buy / palletclearance buy / palletclearance sell).
         window.AngrosistChat.init({
-          containerId: "ai-widget-container",
-          // Router vertical: the triage agent classifies the inbound need and
-          // re-routes the conversation into the concrete flow (buy/sell).
           vertical: "euro-intermed",
           intent: "triage",
           lang: "ro",
