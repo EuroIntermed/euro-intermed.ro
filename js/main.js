@@ -327,3 +327,40 @@
   initFaq();
   initMobileCtaObserver();
 })();
+
+// --- GA4 analytics wiring (KPI §A.2) -----------------------------------------
+// Self-contained and inert when analytics is disabled: gtag() only exists when
+// build.mjs injected the GA snippet (GA_MEASUREMENT_ID set). No IDs here.
+(function () {
+  function gaEvent(name, params) {
+    if (typeof window.gtag === "function") window.gtag("event", name, params || {});
+  }
+
+  // ROUTER: fire `vertical_redirect` when a visitor clicks a vertical link/card.
+  // The `vertical` param (angrosist | clearance | skalyou) comes from the
+  // data-ga-vertical attribute wired onto the pillar CTAs and footer links.
+  document.addEventListener(
+    "click",
+    function (event) {
+      var el = event.target.closest("[data-ga-vertical]");
+      if (!el) return;
+      gaEvent("vertical_redirect", { vertical: el.getAttribute("data-ga-vertical") });
+    },
+    true
+  );
+
+  // ALL SITES: best-effort `chat_opened` when the floating widget launcher is
+  // clicked. The widget mounts asynchronously into #__angrosist_widget__; the
+  // launcher is the 💬 button shown while the panel is closed. We match on that
+  // glyph so panel-internal buttons don't trigger the event.
+  document.addEventListener(
+    "click",
+    function (event) {
+      var btn = event.target.closest("#__angrosist_widget__ button");
+      if (!btn) return;
+      if ((btn.textContent || "").indexOf("💬") === -1) return;
+      gaEvent("chat_opened", { channel: "web_widget" });
+    },
+    true
+  );
+})();
