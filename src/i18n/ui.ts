@@ -40,10 +40,13 @@ const ro = {
       'Buna ziua. Am o oportunitate B2B si vreau sa discut cu Euro Intermed. Detalii: ___',
     flowHub: 'Euro Intermed',
     flowHubLabel: 'Rută B2B',
-    flowCaption: 'Euro Intermed direcționează fiecare cerere către canalul potrivit.',
+    flowCaption:
+      'Euro Intermed direcționează fiecare cerere către canalul potrivit: Angrosist, PalletClearance, Ready-Meal sau SkalYou.',
+    nodeOpen: 'Deschide',
     nodes: {
-      pallet: { tag: 'Clearance', name: 'PalletClearance' },
       angrosist: { tag: 'Sourcing', name: 'Angrosist' },
+      pallet: { tag: 'Clearance', name: 'PalletClearance' },
+      readymeal: { tag: 'Mese ready-made', name: 'Ready-Meal' },
       skalyou: { tag: 'În dezvoltare', name: 'SkalYou' },
     },
   },
@@ -89,6 +92,14 @@ const ro = {
         name: 'Angrosist',
         line: 'Trimite necesarul, primești oferta B2B potrivită.',
         cta: 'Deschide Angrosist',
+        roadmap: false,
+      },
+      {
+        key: 'readymeal',
+        badge: 'Mese ready-made',
+        name: 'Ready-Meal',
+        line: 'Mese ready-made premium, shelf-stable — de la rețetă la produs finit.',
+        cta: 'Deschide Ready-Meal',
         roadmap: false,
       },
       {
@@ -300,10 +311,13 @@ const en: typeof ro = {
       'Hello. I have a B2B opportunity and would like to talk to Euro Intermed. Details: ___',
     flowHub: 'Euro Intermed',
     flowHubLabel: 'B2B route',
-    flowCaption: 'Euro Intermed routes every request to the right channel.',
+    flowCaption:
+      'Euro Intermed routes every request to the right channel: Angrosist, PalletClearance, Ready-Meal or SkalYou.',
+    nodeOpen: 'Open',
     nodes: {
-      pallet: { tag: 'Clearance', name: 'PalletClearance' },
       angrosist: { tag: 'Sourcing', name: 'Angrosist' },
+      pallet: { tag: 'Clearance', name: 'PalletClearance' },
+      readymeal: { tag: 'Ready meals', name: 'Ready-Meal' },
       skalyou: { tag: 'In development', name: 'SkalYou' },
     },
   },
@@ -349,6 +363,14 @@ const en: typeof ro = {
         name: 'Angrosist',
         line: 'Send your needs, get the right B2B offer.',
         cta: 'Open Angrosist',
+        roadmap: false,
+      },
+      {
+        key: 'readymeal',
+        badge: 'Ready meals',
+        name: 'Ready-Meal',
+        line: 'Premium shelf-stable ready meals — recipe to finished product.',
+        cta: 'Open Ready-Meal',
         roadmap: false,
       },
       {

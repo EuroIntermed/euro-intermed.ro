@@ -2,84 +2,114 @@
 /**
  * HeroFlow — the animated "ecosystem flow" diagram and visual centrepiece.
  *
- * A central Euro-Intermed hub node connects to three vertical nodes
- * (PalletClearance, Angrosist, SkalYou). Nodes softly pulse (ei-pulse-node),
- * dots travel along the connectors from hub to nodes (ei-flow-dot via CSS
- * offset-path), and a soft radial glow breathes behind (ei-pulse-glow).
+ * A central Euro-Intermed hub (left) fans out to FOUR clickable vertical nodes
+ * (Angrosist, PalletClearance, Ready-Meal, SkalYou) in a column on the right.
+ * Each live node is an accessible <a> deep-link to its site (env URL); SkalYou is
+ * the roadmap node — a soft, dashed link. Every node carries ITS vertical's hue
+ * (border / tag / connector / dot / halo), AA-legible in light and dark, while
+ * the hub + glow stay on the Euro-Intermed green/gold theme.
  *
- * Pure SVG so it scales to any width and degrades gracefully on small screens.
- * The <svg> carries an aria-label; all motion is disabled under
- * prefers-reduced-motion by the global off-switch in global.css.
+ * Animations: connectors draw in, dots travel hub->node (CSS offset-path), node
+ * halos + glow pulse. All motion is disabled under prefers-reduced-motion by the
+ * global off-switch in global.css. Pure SVG: scales to any width; on small
+ * screens the whole figure just scales down (viewBox) and stays legible.
  */
 import { t } from '../i18n/utils'
 import type { Locale } from '../i18n/ui'
+import { verticalUrls } from '../lib/config'
+
 const { locale } = Astro.props as { locale: Locale }
 const c = t(locale).hero
 const n = c.nodes
+
+// One entry per vertical node. `d` is the hub->node connector path (also used as
+// the travelling dot's offset-path). `cy` is the node's vertical centre.
+const nodes = [
+  {
+    cls: 'an',
+    ga: 'angrosist',
+    url: verticalUrls.angrosist,
+    tag: n.angrosist.tag,
+    name: n.angrosist.name,
+    d: 'M180 214 C 234 150, 250 78, 300 62',
+    cy: 60,
+    roadmap: false,
+  },
+  {
+    cls: 'pc',
+    ga: 'clearance',
+    url: verticalUrls.palletclearance,
+    tag: n.pallet.tag,
+    name: n.pallet.name,
+    d: 'M182 230 C 236 200, 252 182, 300 180',
+    cy: 180,
+    roadmap: false,
+  },
+  {
+    cls: 'rm',
+    ga: 'readymeal',
+    url: verticalUrls.readymeal,
+    tag: n.readymeal.tag,
+    name: n.readymeal.name,
+    d: 'M182 250 C 236 280, 252 298, 300 300',
+    cy: 300,
+    roadmap: false,
+  },
+  {
+    cls: 'sk',
+    ga: 'skalyou',
+    url: verticalUrls.skalyou,
+    tag: n.skalyou.tag,
+    name: n.skalyou.name,
+    d: 'M180 266 C 234 330, 250 402, 300 418',
+    cy: 420,
+    roadmap: true,
+  },
+]
 ---
 
-<figure class="ei-flow" aria-hidden="false">
-  <svg
-    class="ei-flow__svg"
-    viewBox="0 0 480 400"
-    role="img"
-    aria-label={c.flowCaption}
-    preserveAspectRatio="xMidYMid meet"
-  >
+<figure class="ei-flow">
+  <svg class="ei-flow__svg" viewBox="0 0 500 470" aria-label={c.flowCaption} preserveAspectRatio="xMidYMid meet">
     <defs>
       <radialGradient id="ei-glow" cx="50%" cy="50%" r="50%">
         <stop offset="0%" stop-color="var(--ei-accent)" stop-opacity="0.5" />
         <stop offset="55%" stop-color="var(--ei-accent)" stop-opacity="0.14" />
         <stop offset="100%" stop-color="var(--ei-accent)" stop-opacity="0" />
       </radialGradient>
-      <linearGradient id="ei-connector" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="var(--ei-accent)" stop-opacity="0.65" />
-        <stop offset="100%" stop-color="var(--ei-gold)" stop-opacity="0.55" />
-      </linearGradient>
     </defs>
 
     <!-- Breathing radial glow behind the hub -->
-    <circle class="ei-flow__glow" cx="150" cy="200" r="150" fill="url(#ei-glow)" />
+    <circle class="ei-flow__glow" cx="110" cy="240" r="150" fill="url(#ei-glow)" aria-hidden="true" />
 
-    <!-- Connectors -->
-    <g fill="none" stroke="url(#ei-connector)" stroke-width="2" stroke-linecap="round">
-      <path class="ei-flow__wire" d="M196 184 C 250 148, 262 92, 300 78" />
-      <path class="ei-flow__wire" d="M198 200 C 246 192, 278 208, 320 200" />
-      <path class="ei-flow__wire" d="M196 216 C 250 252, 262 308, 300 322" />
-    </g>
+    <!-- Per-vertical groups: each holds its halo, connector, travelling dot and
+         the clickable node. Grouping lets us set the vertical's hue once. -->
+    {
+      nodes.map((node, i) => (
+        <g class={`ei-vert ei-vert--${node.cls}`} style={`--i:${i}`}>
+          <circle class="ei-halo" cx="384" cy={node.cy} r="42" aria-hidden="true" />
+          <path class="ei-wire" d={node.d} fill="none" aria-hidden="true" />
+          <circle class="ei-dot" r="4.5" style={`offset-path: path('${node.d}')`} aria-hidden="true" />
+          <a
+            class={`ei-node ${node.roadmap ? 'ei-node--roadmap' : ''}`}
+            href={node.url}
+            target="_blank"
+            rel="noopener"
+            data-ga-vertical={node.ga}
+            aria-label={`${c.nodeOpen} ${node.name}`}
+          >
+            <rect class="ei-node__box" x="300" y={node.cy - 27} width="168" height="54" rx="16" />
+            <text class="ei-node__tag" x="316" y={node.cy - 4}>{node.tag}</text>
+            <text class="ei-node__name" x="316" y={node.cy + 16}>{node.name}</text>
+          </a>
+        </g>
+      ))
+    }
 
-    <!-- Travelling flow dots (CSS offset-path) -->
-    <circle class="ei-flow__dot ei-flow__dot--1" r="4.5" fill="var(--ei-gold)" />
-    <circle class="ei-flow__dot ei-flow__dot--2" r="4.5" fill="var(--ei-gold)" />
-    <circle class="ei-flow__dot ei-flow__dot--3" r="4.5" fill="var(--ei-gold)" />
-
-    <!-- Vertical node halos (pulse) -->
-    <circle class="ei-flow__halo ei-flow__halo--a" cx="380" cy="70" r="46" />
-    <circle class="ei-flow__halo ei-flow__halo--b" cx="400" cy="200" r="46" />
-    <circle class="ei-flow__halo ei-flow__halo--c" cx="380" cy="330" r="46" />
-
-    <!-- Hub node -->
-    <g class="ei-flow__hub">
-      <rect x="42" y="150" width="156" height="100" rx="22" />
-      <text x="120" y="188" text-anchor="middle" class="ei-flow__kicker">{c.flowHub}</text>
-      <text x="120" y="214" text-anchor="middle" class="ei-flow__hubname">{c.flowHubLabel}</text>
-    </g>
-
-    <!-- Vertical nodes -->
-    <g class="ei-flow__node">
-      <rect x="300" y="42" width="158" height="56" rx="16" />
-      <text x="316" y="66" class="ei-flow__tag">{n.pallet.tag}</text>
-      <text x="316" y="86" class="ei-flow__name">{n.pallet.name}</text>
-    </g>
-    <g class="ei-flow__node">
-      <rect x="320" y="172" width="152" height="56" rx="16" />
-      <text x="336" y="196" class="ei-flow__tag">{n.angrosist.tag}</text>
-      <text x="336" y="216" class="ei-flow__name">{n.angrosist.name}</text>
-    </g>
-    <g class="ei-flow__node ei-flow__node--roadmap">
-      <rect x="300" y="302" width="158" height="56" rx="16" />
-      <text x="316" y="326" class="ei-flow__tag">{n.skalyou.tag}</text>
-      <text x="316" y="346" class="ei-flow__name">{n.skalyou.name}</text>
+    <!-- Hub (Euro-Intermed green + gold) -->
+    <g class="ei-flow__hub" aria-hidden="true">
+      <rect x="30" y="192" width="150" height="96" rx="22" />
+      <text x="105" y="232" text-anchor="middle" class="ei-flow__kicker">{c.flowHub}</text>
+      <text x="105" y="258" text-anchor="middle" class="ei-flow__hubname">{c.flowHubLabel}</text>
     </g>
   </svg>
   <figcaption class="ei-sr-only">{c.flowCaption}</figcaption>
@@ -91,12 +121,42 @@ const n = c.nodes
     width: 100%;
     max-width: 560px;
     filter: drop-shadow(var(--ei-shadow-glow));
+
+    /* Per-vertical node hues — AA-legible tag text (--t-*) on the node surface
+       and decorative hue (--c-*) for border / connector / dot / halo. Light
+       defaults; dark overrides below. */
+    --c-an: #0e7c86;
+    --t-an: #0a616a;
+    --c-pc: #c46a2a;
+    --t-pc: #98491a;
+    --c-rm: #c4442e;
+    --t-rm: #a5341f;
+    --c-sk: #5b57c7;
+    --t-sk: #4a46b0;
   }
   .ei-flow__svg {
     width: 100%;
     height: auto;
     overflow: visible;
     font-family: var(--ei-font-sans);
+  }
+
+  /* Bind each vertical group to its hue */
+  .ei-vert--an {
+    --c: var(--c-an);
+    --t: var(--t-an);
+  }
+  .ei-vert--pc {
+    --c: var(--c-pc);
+    --t: var(--t-pc);
+  }
+  .ei-vert--rm {
+    --c: var(--c-rm);
+    --t: var(--t-rm);
+  }
+  .ei-vert--sk {
+    --c: var(--c-sk);
+    --t: var(--t-sk);
   }
 
   /* Glow */
@@ -106,11 +166,15 @@ const n = c.nodes
     animation: ei-pulse-glow 6s ease-in-out infinite;
   }
 
-  /* Connectors draw-in on load */
-  .ei-flow__wire {
-    stroke-dasharray: 240;
-    stroke-dashoffset: 240;
+  /* Connectors draw in */
+  .ei-wire {
+    stroke: var(--c);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
     animation: ei-flow-draw 1.4s var(--ei-ease-out) forwards;
+    animation-delay: calc(var(--i) * 120ms);
   }
   @keyframes ei-flow-draw {
     to {
@@ -118,37 +182,21 @@ const n = c.nodes
     }
   }
 
-  /* Travelling dots — path matches each connector d */
-  .ei-flow__dot {
-    animation: ei-flow-dot 3.4s linear infinite;
-  }
-  .ei-flow__dot--1 {
-    offset-path: path('M196 184 C 250 148, 262 92, 300 78');
-    animation-delay: 0.2s;
-  }
-  .ei-flow__dot--2 {
-    offset-path: path('M198 200 C 246 192, 278 208, 320 200');
-    animation-delay: 1.3s;
-  }
-  .ei-flow__dot--3 {
-    offset-path: path('M196 216 C 250 252, 262 308, 300 322');
-    animation-delay: 2.2s;
+  /* Travelling dots (offset-path set inline per node) */
+  .ei-dot {
+    fill: var(--c);
+    animation: ei-flow-dot 3.6s linear infinite;
+    animation-delay: calc(var(--i) * 700ms + 300ms);
   }
 
   /* Node halos pulse */
-  .ei-flow__halo {
-    fill: var(--ei-accent);
+  .ei-halo {
+    fill: var(--c);
     opacity: 0.1;
     transform-box: fill-box;
     transform-origin: center;
-    animation: ei-halo 4.5s ease-in-out infinite;
-  }
-  .ei-flow__halo--b {
-    animation-delay: 1s;
-  }
-  .ei-flow__halo--c {
-    fill: var(--ei-gold);
-    animation-delay: 2s;
+    animation: ei-halo 4.6s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 500ms);
   }
   @keyframes ei-halo {
     0%,
@@ -160,6 +208,51 @@ const n = c.nodes
       opacity: 0.2;
       transform: scale(1.12);
     }
+  }
+
+  /* Clickable nodes */
+  .ei-node {
+    cursor: pointer;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.25s var(--ei-ease-out);
+  }
+  .ei-node__box {
+    fill: var(--ei-surface);
+    stroke: var(--c);
+    stroke-width: 1.4;
+    transition: fill 0.2s var(--ei-ease), stroke-width 0.2s var(--ei-ease);
+  }
+  .ei-node--roadmap .ei-node__box {
+    stroke-dasharray: 5 4;
+    opacity: 0.9;
+  }
+  .ei-node__tag {
+    fill: var(--t);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .ei-node__name {
+    fill: var(--ei-ink);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .ei-node:hover {
+    transform: translateX(3px);
+  }
+  .ei-node:hover .ei-node__box {
+    fill: var(--ei-surface-raised);
+    stroke-width: 2.2;
+  }
+  .ei-node:focus-visible {
+    outline: 2px solid var(--ei-focus);
+    outline-offset: 3px;
+    border-radius: 16px;
+  }
+  .ei-node:focus-visible .ei-node__box {
+    stroke-width: 2.2;
   }
 
   /* Hub */
@@ -194,33 +287,33 @@ const n = c.nodes
     font-weight: 600;
   }
 
-  /* Nodes */
-  .ei-flow__node rect {
-    fill: var(--ei-surface);
-    stroke: var(--ei-hairline-strong);
-    stroke-width: 1;
+  /* Dark-theme node hues (brighter tag text on the dark node surface) */
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .ei-flow {
+      --c-an: #2bb0bd;
+      --t-an: #4cc6d1;
+      --c-pc: #e08a4a;
+      --t-pc: #eaa06a;
+      --c-rm: #e8674f;
+      --t-rm: #f0a08d;
+      --c-sk: #8f8cf0;
+      --t-sk: #b3b0f4;
+    }
   }
-  .ei-flow__node--roadmap rect {
-    stroke-dasharray: 5 4;
-    stroke: var(--ei-gold);
-    stroke-opacity: 0.6;
-  }
-  .ei-flow__tag {
-    fill: var(--ei-accent-text);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .ei-flow__name {
-    fill: var(--ei-ink);
-    font-size: 15px;
-    font-weight: 600;
+  :global(:root[data-theme='dark']) .ei-flow {
+    --c-an: #2bb0bd;
+    --t-an: #4cc6d1;
+    --c-pc: #e08a4a;
+    --t-pc: #eaa06a;
+    --c-rm: #e8674f;
+    --t-rm: #f0a08d;
+    --c-sk: #8f8cf0;
+    --t-sk: #b3b0f4;
   }
 
   @media (max-width: 560px) {
     .ei-flow {
-      max-width: 440px;
+      max-width: 460px;
       margin-inline: auto;
     }
   }

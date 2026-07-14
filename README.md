@@ -65,6 +65,7 @@ the old `build.mjs` env templating. Set these per Vercel project:
 | `PUBLIC_CONTACT_EMAIL` / `PUBLIC_CONTACT_PHONE` / `PUBLIC_CALENDLY_URL` | contact details | *(company defaults)* |
 | `PUBLIC_URL_ANGROSIST` | Angrosist deep-link | `https://angrosist.ro` |
 | `PUBLIC_URL_PALLETCLEARANCE` | PalletClearance deep-link | `https://palletclearance.com` |
+| `PUBLIC_URL_READYMEAL` | Ready-Meal deep-link | `https://ready-meal.com` |
 | `PUBLIC_URL_SKALYOU` | SkalYou deep-link | `https://skalyou.com` |
 
 GA4 uses **Consent Mode v2** — analytics storage stays `denied` until the visitor
@@ -97,6 +98,33 @@ in **both** light and dark.
 
 The three primaries sit far apart on the hue wheel (green / cyan-blue / orange) so
 the sites read as clearly distinct, not "all green + gold" like the old ones.
+
+### Ecosystem channels & the hero diagram (4 clickable, themed nodes)
+
+Euro-Intermed is the hub for **four** vertical channels — three **live**, one
+roadmap:
+
+| Channel | Status | Node hue (light → dark) | Deep-link env |
+|---|---|---|---|
+| **Angrosist** (sourcing) | live | teal `#0E7C86` → `#2BB0BD` | `PUBLIC_URL_ANGROSIST` |
+| **PalletClearance** (clearance) | live | amber `#C46A2A` → `#E08A4A` | `PUBLIC_URL_PALLETCLEARANCE` |
+| **Ready-Meal** (shelf-stable ready meals) | live | coral `#C4442E` → `#E8674F` | `PUBLIC_URL_READYMEAL` |
+| **SkalYou** (AI scaling) | roadmap | indigo `#5B57C7` → `#8F8CF0` | `PUBLIC_URL_SKALYOU` |
+
+**Ready-Meal** = premium **shelf-stable, ready-to-eat meals** (thermo-sterilized,
+EVOH packaging) for HoReCa / corporate / retail — "Open. Heat. Serve." /
+"de la rețetă la produs finit". It appears as a first-class vertical everywhere the
+others do (ecosystem card + hero node + footer).
+
+`HeroFlow.astro` is the animated centrepiece: a green/gold **hub on the left** fans
+to a **column of four nodes** on the right. Each node is an accessible SVG `<a>`
+deep-link (keyboard-focusable, visible focus ring, `aria-label="Deschide/Open X"`,
+opens in a new tab) tinted with its vertical hue on border / tag / connector /
+travelling dot / halo — each hue AA-legible on the node surface in light **and**
+dark (tag-text shades: `#0a616a·#98491a·#a5341f·#4a46b0` light; `#4cc6d1·#eaa06a·#f0a08d·#b3b0f4`
+dark). SkalYou is the soft/dashed roadmap node. Connectors draw in, dots travel per
+node, halos + glow pulse — all disabled under reduced motion. The figure scales via
+its viewBox and stays legible on mobile.
 
 **Text tokens** (never put a raw accent/gold on pale as small text): use
 `--ei-accent-text` for accent links/eyebrows and `--ei-gold-text` for the secondary;

@@ -84,6 +84,7 @@ export const verticalUrls = {
     'PUBLIC_URL_PALLETCLEARANCE',
     str('PUBLIC_PALLETCLEARANCE_URL', 'https://palletclearance.com'),
   ),
+  readymeal: str('PUBLIC_URL_READYMEAL', 'https://ready-meal.com'),
   skalyou: str('PUBLIC_URL_SKALYOU', str('PUBLIC_SKALYOU_URL', 'https://skalyou.com')),
 }
 

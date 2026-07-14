@@ -25,6 +25,7 @@ const contactHref = localizePath('/contact', locale)
 const pillarLinks: Record<string, { url: string; ga: string }> = {
   clearance: { url: verticalUrls.palletclearance, ga: 'clearance' },
   angrosist: { url: verticalUrls.angrosist, ga: 'angrosist' },
+  readymeal: { url: verticalUrls.readymeal, ga: 'readymeal' },
   skalyou: { url: verticalUrls.skalyou, ga: 'skalyou' },
 }
 ---
@@ -57,7 +58,7 @@ const pillarLinks: Record<string, { url: string; ga: string }> = {
       <h2 id="eco-title">{c.ecosystem.title}</h2>
       <p class="ei-lead">{c.ecosystem.copy}</p>
     </div>
-    <div class="ei-grid ei-grid--3">
+    <div class="ei-grid ei-grid--4">
       {
         c.ecosystem.pillars.map((p, i) => {
           const link = pillarLinks[p.key]
