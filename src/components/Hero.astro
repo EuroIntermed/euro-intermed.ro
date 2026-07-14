@@ -3,7 +3,7 @@
  * Hero — badge with pulsing dot, staggered fadeUp headline + lead, the
  * primary / secondary / WhatsApp actions, and the animated HeroFlow visual.
  */
-import { t, localizePath } from '../i18n/utils'
+import { t } from '../i18n/utils'
 import type { Locale } from '../i18n/ui'
 import { waLink } from '../lib/config'
 import Button from './Button.astro'
@@ -11,7 +11,6 @@ import HeroFlow from './HeroFlow.astro'
 
 const { locale } = Astro.props as { locale: Locale }
 const c = t(locale).hero
-const contactHref = localizePath('/contact', locale)
 ---
 
 <section class="ei-hero" aria-labelledby="ei-hero-title">
@@ -25,11 +24,10 @@ const contactHref = localizePath('/contact', locale)
       <h1 class="ei-hero__title" id="ei-hero-title" data-hero style="--i:1">{c.title}</h1>
       <p class="ei-lead ei-hero__lead" data-hero style="--i:2">{c.lead}</p>
       <div class="ei-hero__actions" data-hero style="--i:3">
-        <Button href={contactHref} variant="primary">{c.primary}</Button>
-        <Button href="#ecosystem" variant="secondary">{c.secondary}</Button>
         <Button href={waLink(c.whatsappText)} variant="whatsapp" target="_blank" rel="noopener" data-ga-vertical="whatsapp">
           {c.whatsapp}
         </Button>
+        <Button href="#ecosystem" variant="secondary">{c.secondary}</Button>
       </div>
     </div>
 
