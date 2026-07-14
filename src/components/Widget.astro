@@ -1,0 +1,42 @@
+---
+/**
+ * Widget — the Euro-Intermed AI chat widget embed. Origin + visibility come from
+ * env (WIDGET_BASE_URL / WIDGET_ENABLED); nothing is hardcoded. This is the
+ * Astro re-implementation of the WIDGET block that build.mjs used to template.
+ *
+ * When WIDGET_ENABLED=false the component renders nothing (widget stripped).
+ * The backend API URL is baked into widget.js at build time (frontend's
+ * VITE_API_URL) — we deliberately do NOT pass apiUrl here so that single source
+ * of truth is preserved. The router vertical "euro-intermed" + intent "triage"
+ * lets the agent classify the inbound need and route into the concrete flow.
+ */
+import type { Locale } from '../i18n/ui'
+import { widgetEnabled, widgetBaseUrl } from '../lib/config'
+import { localizePath } from '../i18n/utils'
+const { locale } = Astro.props as { locale: Locale }
+const privacyUrl = localizePath('/confidentialitate', locale)
+---
+
+{
+  widgetEnabled && (
+    <>
+      <script is:inline src={`${widgetBaseUrl}/widget.js`} defer />
+      <script is:inline define:vars={{ lang: locale, privacyUrl }}>
+        {`
+        window.addEventListener('DOMContentLoaded', function () {
+          if (!window.AngrosistChat) return;
+          // No containerId → floating launcher button (bottom-right). Router
+          // vertical: the triage agent classifies the inbound need and re-routes
+          // the conversation into the concrete flow.
+          window.AngrosistChat.init({
+            vertical: 'euro-intermed',
+            intent: 'triage',
+            lang: lang,
+            privacyUrl: privacyUrl
+          });
+        });
+      `}
+      </script>
+    </>
+  )
+}

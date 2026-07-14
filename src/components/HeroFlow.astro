@@ -1,0 +1,227 @@
+---
+/**
+ * HeroFlow — the animated "ecosystem flow" diagram and visual centrepiece.
+ *
+ * A central Euro-Intermed hub node connects to three vertical nodes
+ * (PalletClearance, Angrosist, SkalYou). Nodes softly pulse (ei-pulse-node),
+ * dots travel along the connectors from hub to nodes (ei-flow-dot via CSS
+ * offset-path), and a soft radial glow breathes behind (ei-pulse-glow).
+ *
+ * Pure SVG so it scales to any width and degrades gracefully on small screens.
+ * The <svg> carries an aria-label; all motion is disabled under
+ * prefers-reduced-motion by the global off-switch in global.css.
+ */
+import { t } from '../i18n/utils'
+import type { Locale } from '../i18n/ui'
+const { locale } = Astro.props as { locale: Locale }
+const c = t(locale).hero
+const n = c.nodes
+---
+
+<figure class="ei-flow" aria-hidden="false">
+  <svg
+    class="ei-flow__svg"
+    viewBox="0 0 480 400"
+    role="img"
+    aria-label={c.flowCaption}
+    preserveAspectRatio="xMidYMid meet"
+  >
+    <defs>
+      <radialGradient id="ei-glow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="var(--ei-accent)" stop-opacity="0.5" />
+        <stop offset="55%" stop-color="var(--ei-accent)" stop-opacity="0.14" />
+        <stop offset="100%" stop-color="var(--ei-accent)" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="ei-connector" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="var(--ei-accent)" stop-opacity="0.65" />
+        <stop offset="100%" stop-color="var(--ei-gold)" stop-opacity="0.55" />
+      </linearGradient>
+    </defs>
+
+    <!-- Breathing radial glow behind the hub -->
+    <circle class="ei-flow__glow" cx="150" cy="200" r="150" fill="url(#ei-glow)" />
+
+    <!-- Connectors -->
+    <g fill="none" stroke="url(#ei-connector)" stroke-width="2" stroke-linecap="round">
+      <path class="ei-flow__wire" d="M196 184 C 250 148, 262 92, 300 78" />
+      <path class="ei-flow__wire" d="M202 200 C 250 200, 282 200, 322 200" />
+      <path class="ei-flow__wire" d="M196 216 C 250 252, 262 308, 300 322" />
+    </g>
+
+    <!-- Travelling flow dots (CSS offset-path) -->
+    <circle class="ei-flow__dot ei-flow__dot--1" r="4.5" fill="var(--ei-gold)" />
+    <circle class="ei-flow__dot ei-flow__dot--2" r="4.5" fill="var(--ei-gold)" />
+    <circle class="ei-flow__dot ei-flow__dot--3" r="4.5" fill="var(--ei-gold)" />
+
+    <!-- Vertical node halos (pulse) -->
+    <circle class="ei-flow__halo ei-flow__halo--a" cx="380" cy="70" r="46" />
+    <circle class="ei-flow__halo ei-flow__halo--b" cx="400" cy="200" r="46" />
+    <circle class="ei-flow__halo ei-flow__halo--c" cx="380" cy="330" r="46" />
+
+    <!-- Hub node -->
+    <g class="ei-flow__hub">
+      <rect x="42" y="150" width="156" height="100" rx="22" />
+      <text x="120" y="188" text-anchor="middle" class="ei-flow__kicker">{c.flowHub}</text>
+      <text x="120" y="214" text-anchor="middle" class="ei-flow__hubname">{c.flowHubLabel}</text>
+    </g>
+
+    <!-- Vertical nodes -->
+    <g class="ei-flow__node">
+      <rect x="300" y="42" width="158" height="56" rx="16" />
+      <text x="316" y="66" class="ei-flow__tag">{n.pallet.tag}</text>
+      <text x="316" y="86" class="ei-flow__name">{n.pallet.name}</text>
+    </g>
+    <g class="ei-flow__node">
+      <rect x="320" y="172" width="152" height="56" rx="16" />
+      <text x="336" y="196" class="ei-flow__tag">{n.angrosist.tag}</text>
+      <text x="336" y="216" class="ei-flow__name">{n.angrosist.name}</text>
+    </g>
+    <g class="ei-flow__node ei-flow__node--roadmap">
+      <rect x="300" y="302" width="158" height="56" rx="16" />
+      <text x="316" y="326" class="ei-flow__tag">{n.skalyou.tag}</text>
+      <text x="316" y="346" class="ei-flow__name">{n.skalyou.name}</text>
+    </g>
+  </svg>
+  <figcaption class="ei-sr-only">{c.flowCaption}</figcaption>
+</figure>
+
+<style>
+  .ei-flow {
+    margin: 0;
+    width: 100%;
+    max-width: 560px;
+    filter: drop-shadow(var(--ei-shadow-glow));
+  }
+  .ei-flow__svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    font-family: var(--ei-font-sans);
+  }
+
+  /* Glow */
+  .ei-flow__glow {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ei-pulse-glow 6s ease-in-out infinite;
+  }
+
+  /* Connectors draw-in on load */
+  .ei-flow__wire {
+    stroke-dasharray: 240;
+    stroke-dashoffset: 240;
+    animation: ei-flow-draw 1.4s var(--ei-ease-out) forwards;
+  }
+  @keyframes ei-flow-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Travelling dots — path matches each connector d */
+  .ei-flow__dot {
+    animation: ei-flow-dot 3.4s linear infinite;
+  }
+  .ei-flow__dot--1 {
+    offset-path: path('M196 184 C 250 148, 262 92, 300 78');
+    animation-delay: 0.2s;
+  }
+  .ei-flow__dot--2 {
+    offset-path: path('M202 200 C 250 200, 282 200, 322 200');
+    animation-delay: 1.3s;
+  }
+  .ei-flow__dot--3 {
+    offset-path: path('M196 216 C 250 252, 262 308, 300 322');
+    animation-delay: 2.2s;
+  }
+
+  /* Node halos pulse */
+  .ei-flow__halo {
+    fill: var(--ei-accent);
+    opacity: 0.1;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ei-halo 4.5s ease-in-out infinite;
+  }
+  .ei-flow__halo--b {
+    animation-delay: 1s;
+  }
+  .ei-flow__halo--c {
+    fill: var(--ei-gold);
+    animation-delay: 2s;
+  }
+  @keyframes ei-halo {
+    0%,
+    100% {
+      opacity: 0.08;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.2;
+      transform: scale(1.12);
+    }
+  }
+
+  /* Hub */
+  .ei-flow__hub rect {
+    fill: var(--ei-surface-contrast);
+    stroke: var(--ei-gold);
+    stroke-opacity: 0.5;
+    stroke-width: 1.5;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ei-pulse-node 5s ease-in-out infinite;
+  }
+  @keyframes ei-pulse-node {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
+  .ei-flow__kicker {
+    fill: var(--ei-gold);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .ei-flow__hubname {
+    fill: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  /* Nodes */
+  .ei-flow__node rect {
+    fill: var(--ei-surface);
+    stroke: var(--ei-hairline-strong);
+    stroke-width: 1;
+  }
+  .ei-flow__node--roadmap rect {
+    stroke-dasharray: 5 4;
+    stroke: var(--ei-gold);
+    stroke-opacity: 0.6;
+  }
+  .ei-flow__tag {
+    fill: var(--ei-accent);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .ei-flow__name {
+    fill: var(--ei-ink);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 560px) {
+    .ei-flow {
+      max-width: 440px;
+      margin-inline: auto;
+    }
+  }
+</style>

@@ -1,0 +1,444 @@
+---
+/**
+ * ContactPage — B2B contact form (name / company / country / email / phone +
+ * intent + message) with graceful client-side validation, plus a WhatsApp CTA
+ * that pre-fills the wa.me message from the selected intent (migrated from the
+ * old main.js routing). The form `action` comes from PUBLIC_CONTACT_FORM_ACTION;
+ * when unset the form degrades to the WhatsApp / email fallback.
+ */
+import type { Locale } from '../i18n/ui'
+import { t } from '../i18n/utils'
+import {
+  contactFormAction,
+  waLink,
+  contactEmail,
+  contactPhone,
+  calendlyUrl,
+} from '../lib/config'
+import BaseLayout from './BaseLayout.astro'
+import Button from './Button.astro'
+
+const { locale } = Astro.props as { locale: Locale }
+const c = t(locale)
+const f = c.contact.form
+const aside = c.contact.aside
+const options = f.intentOptions
+const defaultWa = options[options.length - 1].wa
+---
+
+<BaseLayout locale={locale} title={c.meta.contactTitle} description={c.meta.contactDescription}>
+  <section class="ei-contact">
+    <div class="ei-container ei-contact__grid">
+      <div class="ei-contact__main" data-reveal>
+        <p class="ei-eyebrow">{c.contact.eyebrow}</p>
+        <h1>{c.contact.title}</h1>
+        <p class="ei-lead">{c.contact.lead}</p>
+
+        <form
+          class="ei-form"
+          data-contact-form
+          action={contactFormAction || undefined}
+          method="post"
+          novalidate
+        >
+          <div class="ei-form__row">
+            <div class="ei-field">
+              <label for="cf-name">{f.name}</label>
+              <input id="cf-name" name="contact_person" type="text" autocomplete="name" required />
+              <p class="ei-field__err" data-err="contact_person"></p>
+            </div>
+            <div class="ei-field">
+              <label for="cf-company">{f.company}</label>
+              <input id="cf-company" name="company_name" type="text" autocomplete="organization" required />
+              <p class="ei-field__err" data-err="company_name"></p>
+            </div>
+          </div>
+
+          <div class="ei-form__row">
+            <div class="ei-field">
+              <label for="cf-country">{f.country}</label>
+              <input id="cf-country" name="country" type="text" autocomplete="country-name" required />
+              <p class="ei-field__err" data-err="country"></p>
+            </div>
+            <div class="ei-field">
+              <label for="cf-intent">{f.intent}</label>
+              <select id="cf-intent" name="selected_route" data-intent>
+                {options.map((o) => <option value={o.value} data-wa={o.wa}>{o.label}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div class="ei-form__row">
+            <div class="ei-field">
+              <label for="cf-email">{f.email}</label>
+              <input id="cf-email" name="email" type="email" autocomplete="email" inputmode="email" />
+              <p class="ei-field__err" data-err="email"></p>
+            </div>
+            <div class="ei-field">
+              <label for="cf-phone">{f.phone}</label>
+              <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" />
+              <p class="ei-field__err" data-err="phone"></p>
+            </div>
+          </div>
+
+          <div class="ei-field">
+            <label for="cf-message">{f.message}</label>
+            <textarea id="cf-message" name="message" rows="4"></textarea>
+          </div>
+
+          <label class="ei-consent">
+            <input type="checkbox" name="contact_consent" data-consent-check />
+            <span>{f.consent}</span>
+          </label>
+          <p class="ei-field__err" data-err="consent"></p>
+
+          <div class="ei-form__actions">
+            <Button variant="primary" type="submit" data-submit>{f.submit}</Button>
+            <p class="ei-form__status" data-status role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+
+      <aside class="ei-contact__aside">
+        <div class="ei-panel ei-panel--wa" data-reveal style="--i:1">
+          <p class="ei-eyebrow">{aside.whatsappEyebrow}</p>
+          <h2>{aside.whatsappTitle}</h2>
+          <p data-wa-helper>{aside.whatsappHelper}</p>
+          <Button
+            href={waLink(defaultWa)}
+            variant="whatsapp"
+            target="_blank"
+            rel="noopener"
+            data-wa-link
+            data-ga-vertical="whatsapp"
+          >
+            {aside.whatsappCta}
+          </Button>
+        </div>
+
+        <div class="ei-panel" data-reveal style="--i:2">
+          <p class="ei-eyebrow">{aside.nextEyebrow}</p>
+          <ul class="ei-panel__list">
+            {aside.next.map((item) => <li>{item}</li>)}
+          </ul>
+        </div>
+
+        <div class="ei-panel" data-reveal style="--i:3">
+          <p class="ei-eyebrow">{aside.directEyebrow}</p>
+          <dl class="ei-panel__dl">
+            <dt>{aside.email}</dt>
+            <dd><a href={`mailto:${contactEmail}`}>{contactEmail}</a></dd>
+            <dt>{aside.phone}</dt>
+            <dd><a href={`tel:${contactPhone}`}>{contactPhone}</a></dd>
+          </dl>
+          <a class="ei-panel__cal" href={calendlyUrl} target="_blank" rel="noopener">{aside.calendlyCta} &rarr;</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<script
+  is:inline
+  define:vars={{
+    waBase: waLink(),
+    msgs: {
+      required: f.required,
+      invalidEmail: f.invalidEmail,
+      contactRequired: f.contactRequired,
+      consentRequired: f.consentRequired,
+      success: f.success,
+      error: f.error,
+      noEndpoint: f.noEndpoint,
+      submitting: f.submitting,
+      submit: f.submit,
+    },
+    hasEndpoint: Boolean(contactFormAction),
+  }}
+>
+  {`
+  (function () {
+    var form = document.querySelector('[data-contact-form]');
+    if (!form) return;
+    var intent = form.querySelector('[data-intent]');
+    var waLinkEl = document.querySelector('[data-wa-link]');
+    var status = form.querySelector('[data-status]');
+    var submit = form.querySelector('[data-submit]');
+    var consent = form.querySelector('[data-consent-check]');
+
+    function setErr(name, message) {
+      var el = form.querySelector('[data-err="' + name + '"]');
+      if (el) el.textContent = message || '';
+    }
+    function clearErrs() {
+      form.querySelectorAll('[data-err]').forEach(function (e) { e.textContent = ''; });
+      status.textContent = '';
+      status.className = 'ei-form__status';
+    }
+    function val(name) {
+      var el = form.elements[name];
+      return el ? String(el.value || '').trim() : '';
+    }
+
+    // WhatsApp deep-link updates with the selected intent.
+    function updateWa() {
+      if (!waLinkEl || !intent) return;
+      var opt = intent.options[intent.selectedIndex];
+      var text = opt ? opt.getAttribute('data-wa') : '';
+      waLinkEl.setAttribute('href', text ? waBase + '?text=' + encodeURIComponent(text) : waBase);
+    }
+    if (intent) intent.addEventListener('change', updateWa);
+    updateWa();
+
+    function validate() {
+      clearErrs();
+      var ok = true;
+      [['contact_person'], ['company_name'], ['country']].forEach(function (f2) {
+        if (!val(f2[0])) { setErr(f2[0], msgs.required); ok = false; }
+      });
+      var email = val('email');
+      var phone = val('phone');
+      if (!email && !phone) {
+        setErr('email', msgs.contactRequired);
+        setErr('phone', msgs.contactRequired);
+        ok = false;
+      }
+      if (email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+        setErr('email', msgs.invalidEmail); ok = false;
+      }
+      if (!consent || !consent.checked) { setErr('consent', msgs.consentRequired); ok = false; }
+      return ok;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!validate()) {
+        var first = form.querySelector('[data-err]:not(:empty)');
+        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      if (!hasEndpoint) {
+        status.textContent = msgs.noEndpoint;
+        status.className = 'ei-form__status ei-is-error';
+        return;
+      }
+      submit.disabled = true;
+      submit.textContent = msgs.submitting;
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' }
+      })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (res) {
+          if (!res.ok) throw new Error('bad');
+          status.textContent = msgs.success;
+          status.className = 'ei-form__status ei-is-success';
+          form.reset();
+          updateWa();
+        })
+        .catch(function () {
+          status.textContent = msgs.error;
+          status.className = 'ei-form__status ei-is-error';
+        })
+        .finally(function () {
+          submit.disabled = false;
+          submit.textContent = msgs.submit;
+        });
+    });
+  })();
+  `}
+</script>
+
+<style>
+  .ei-contact {
+    padding-block: clamp(2.5rem, 2rem + 4vw, 5rem);
+  }
+  .ei-contact__grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(2rem, 1rem + 4vw, 4rem);
+    align-items: start;
+  }
+  .ei-contact__main h1 {
+    margin-top: 0.7rem;
+  }
+  .ei-contact__main .ei-lead {
+    margin-top: 1rem;
+  }
+
+  .ei-form {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: clamp(1.4rem, 1.1rem + 1.2vw, 2rem);
+    background: var(--ei-surface);
+    border: 1px solid var(--ei-hairline);
+    border-radius: var(--ei-radius-lg);
+    box-shadow: var(--ei-shadow-sm);
+  }
+  .ei-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+  }
+  .ei-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .ei-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ei-ink-soft);
+  }
+  .ei-field input,
+  .ei-field select,
+  .ei-field textarea {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    font: inherit;
+    color: var(--ei-ink);
+    background: var(--ei-ground);
+    border: 1px solid var(--ei-hairline-strong);
+    border-radius: var(--ei-radius-sm);
+    transition: border-color 0.2s var(--ei-ease), box-shadow 0.2s var(--ei-ease);
+  }
+  .ei-field textarea {
+    resize: vertical;
+    min-height: 96px;
+  }
+  .ei-field input:focus,
+  .ei-field select:focus,
+  .ei-field textarea:focus {
+    outline: none;
+    border-color: var(--ei-accent);
+    box-shadow: 0 0 0 3px var(--ei-accent-soft);
+  }
+  .ei-field__err {
+    margin: 0;
+    min-height: 1em;
+    font-size: 0.8rem;
+    color: #c0392b;
+  }
+  :root[data-theme='dark'] .ei-field__err {
+    color: #ff8f81;
+  }
+
+  .ei-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: var(--ei-muted);
+    cursor: pointer;
+  }
+  .ei-consent input {
+    margin-top: 0.2rem;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--ei-accent);
+    flex: 0 0 auto;
+  }
+
+  .ei-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+  }
+  .ei-form__status {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .ei-form__status.ei-is-success {
+    color: var(--ei-accent-strong);
+  }
+  .ei-form__status.ei-is-error {
+    color: #c0392b;
+  }
+  :root[data-theme='dark'] .ei-form__status.ei-is-error {
+    color: #ff8f81;
+  }
+
+  /* Aside panels */
+  .ei-contact__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: sticky;
+    top: 92px;
+  }
+  .ei-panel {
+    padding: 1.4rem 1.5rem;
+    background: var(--ei-surface);
+    border: 1px solid var(--ei-hairline);
+    border-radius: var(--ei-radius-lg);
+    box-shadow: var(--ei-shadow-sm);
+  }
+  .ei-panel h2 {
+    font-size: 1.2rem;
+    margin-top: 0.4rem;
+    margin-bottom: 0.5rem;
+  }
+  .ei-panel p {
+    color: var(--ei-muted);
+    font-size: 0.92rem;
+  }
+  .ei-panel--wa .ei-btn {
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .ei-panel__list {
+    margin: 0.6rem 0 0;
+    padding-left: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: var(--ei-muted);
+    font-size: 0.9rem;
+  }
+  .ei-panel__dl {
+    margin: 0.7rem 0 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 1rem;
+    font-size: 0.92rem;
+  }
+  .ei-panel__dl dt {
+    color: var(--ei-faint);
+    font-weight: 600;
+  }
+  .ei-panel__dl dd {
+    margin: 0;
+  }
+  .ei-panel__dl a {
+    color: var(--ei-accent-strong);
+  }
+  .ei-panel__cal {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ei-accent-strong);
+  }
+  .ei-panel__cal:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 900px) {
+    .ei-contact__grid {
+      grid-template-columns: 1fr;
+    }
+    .ei-contact__aside {
+      position: static;
+    }
+  }
+  @media (max-width: 560px) {
+    .ei-form__row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

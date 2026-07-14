@@ -1,0 +1,378 @@
+---
+/**
+ * Home — full homepage body for a single locale. Rendered by both /index.astro
+ * (ro) and /en/index.astro (en). Structure: hero → positioning → about →
+ * ecosystem (3 vertical cards) → audience → process → markets → trust → FAQ →
+ * contact CTA. All copy comes from the i18n dictionary.
+ */
+import type { Locale } from '../i18n/ui'
+import { t, localizePath } from '../i18n/utils'
+import { verticalUrls, waLink } from '../lib/config'
+import BaseLayout from './BaseLayout.astro'
+import Hero from './Hero.astro'
+import Section from './Section.astro'
+import Card from './Card.astro'
+import Button from './Button.astro'
+import FAQ from './FAQ.astro'
+
+const { locale } = Astro.props as { locale: Locale }
+const c = t(locale)
+const contactHref = localizePath('/contact', locale)
+
+const pillarLinks: Record<string, { url: string; ga: string }> = {
+  clearance: { url: verticalUrls.palletclearance, ga: 'clearance' },
+  angrosist: { url: verticalUrls.angrosist, ga: 'angrosist' },
+  skalyou: { url: verticalUrls.skalyou, ga: 'skalyou' },
+}
+---
+
+<BaseLayout locale={locale} title={c.meta.homeTitle} description={c.meta.homeDescription}>
+  <Hero locale={locale} />
+
+  <!-- Positioning -->
+  <Section tone="raised" labelledby="pos-title">
+    <div class="ei-head" data-reveal>
+      <p class="ei-eyebrow">{c.positioning.eyebrow}</p>
+      <h2 id="pos-title">{c.positioning.title}</h2>
+      <p class="ei-lead">{c.positioning.copy}</p>
+    </div>
+    <div class="ei-grid ei-grid--auto">
+      {
+        c.positioning.items.map((item, i) => (
+          <Card variant="numbered" number={item.n} title={item.title} index={i}>
+            <p>{item.body}</p>
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- About -->
+  <Section id="about" labelledby="about-title">
+    <div class="ei-split">
+      <div class="ei-head" data-reveal>
+        <p class="ei-eyebrow">{c.about.eyebrow}</p>
+        <h2 id="about-title">{c.about.title}</h2>
+      </div>
+      <div class="ei-copy" data-reveal style="--i:1">
+        {c.about.body.map((p) => <p>{p}</p>)}
+      </div>
+    </div>
+  </Section>
+
+  <!-- Ecosystem: the three verticals -->
+  <Section id="ecosystem" tone="contrast" labelledby="eco-title">
+    <div class="ei-head ei-head--center" data-reveal>
+      <p class="ei-eyebrow">{c.ecosystem.eyebrow}</p>
+      <h2 id="eco-title">{c.ecosystem.title}</h2>
+      <p class="ei-lead">{c.ecosystem.copy}</p>
+    </div>
+
+    <div class="ei-rule" role="note" data-reveal>
+      <span>{c.ecosystem.rule.pallet} <strong>PalletClearance.eu</strong></span>
+      <span class="ei-rule__div" aria-hidden="true"></span>
+      <span>{c.ecosystem.rule.angrosist} <strong>Angrosist.ro</strong></span>
+    </div>
+
+    <div class="ei-grid ei-grid--3">
+      {
+        c.ecosystem.pillars.map((p, i) => {
+          const link = pillarLinks[p.key]
+          return (
+            <Card variant="pillar" roadmap={p.roadmap} badge={p.badge} title={p.name} index={i}>
+              <p>{p.body}</p>
+              <p class="ei-card__note">{p.note}</p>
+              <div class="ei-card__pillar-actions">
+                <Button
+                  href={link.url}
+                  variant="ghost"
+                  size="sm"
+                  target="_blank"
+                  rel="noopener"
+                  data-ga-vertical={link.ga}
+                >
+                  {p.cta}
+                </Button>
+              </div>
+            </Card>
+          )
+        })
+      }
+    </div>
+  </Section>
+
+  <!-- Audience -->
+  <Section labelledby="aud-title">
+    <div class="ei-head" data-reveal>
+      <p class="ei-eyebrow">{c.audience.eyebrow}</p>
+      <h2 id="aud-title">{c.audience.title}</h2>
+    </div>
+    <div class="ei-grid ei-grid--4">
+      {
+        c.audience.items.map((item, i) => (
+          <Card title={item.title} index={i}>
+            <p>{item.body}</p>
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- Process -->
+  <Section id="how-we-work" tone="raised" labelledby="proc-title">
+    <div class="ei-head ei-head--center" data-reveal>
+      <p class="ei-eyebrow">{c.process.eyebrow}</p>
+      <h2 id="proc-title">{c.process.title}</h2>
+    </div>
+    <ol class="ei-steps">
+      {
+        c.process.steps.map((step, i) => (
+          <li class="ei-step" data-reveal style={`--i:${i}`}>
+            <span class="ei-step__n" aria-hidden="true">{i + 1}</span>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <!-- Markets -->
+  <Section id="markets" labelledby="mkt-title">
+    <div class="ei-split">
+      <div class="ei-head" data-reveal>
+        <p class="ei-eyebrow">{c.markets.eyebrow}</p>
+        <h2 id="mkt-title">{c.markets.title}</h2>
+      </div>
+      <div class="ei-copy" data-reveal style="--i:1">
+        <p>{c.markets.body}</p>
+        <ul class="ei-check">
+          {c.markets.points.map((pt) => <li>{pt}</li>)}
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Trust -->
+  <Section tone="raised" labelledby="trust-title">
+    <div class="ei-head ei-head--center" data-reveal>
+      <p class="ei-eyebrow">{c.trust.eyebrow}</p>
+      <h2 id="trust-title">{c.trust.title}</h2>
+    </div>
+    <div class="ei-grid ei-grid--3">
+      {
+        c.trust.items.map((item, i) => (
+          <Card title={item.title} index={i}>
+            <p>{item.body}</p>
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- FAQ -->
+  <Section id="faq" labelledby="faq-title">
+    <div class="ei-head ei-head--center" data-reveal>
+      <p class="ei-eyebrow">{c.faq.eyebrow}</p>
+      <h2 id="faq-title">{c.faq.title}</h2>
+    </div>
+    <FAQ items={c.faq.items} />
+  </Section>
+
+  <!-- Contact CTA -->
+  <Section id="contact" tone="contrast" labelledby="cta-title">
+    <div class="ei-cta" data-reveal>
+      <p class="ei-eyebrow">{c.contactCta.eyebrow}</p>
+      <h2 id="cta-title">{c.contactCta.title}</h2>
+      <p class="ei-lead">{c.contactCta.copy}</p>
+      <div class="ei-cta__actions">
+        <Button href={contactHref} variant="primary">{c.contactCta.primary}</Button>
+        <Button href={waLink(c.hero.whatsappText)} variant="whatsapp" target="_blank" rel="noopener" data-ga-vertical="whatsapp">
+          {c.contactCta.whatsapp}
+        </Button>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .ei-head {
+    max-width: 60ch;
+    margin-bottom: 2.5rem;
+  }
+  .ei-head--center {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .ei-head--center .ei-lead {
+    margin-inline: auto;
+  }
+  .ei-head h2 {
+    margin-top: 0.7rem;
+  }
+  .ei-head .ei-lead {
+    margin-top: 1rem;
+  }
+
+  .ei-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .ei-grid--auto {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .ei-grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .ei-grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .ei-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 1rem + 4vw, 4rem);
+    align-items: start;
+  }
+  .ei-split .ei-head {
+    margin-bottom: 0;
+  }
+  .ei-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: var(--ei-muted);
+    max-width: 60ch;
+  }
+
+  /* Routing rule chip band */
+  .ei-rule {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem 1.4rem;
+    max-width: 900px;
+    margin: 0 auto 2.5rem;
+    padding: 1rem 1.4rem;
+    border: 1px solid var(--ei-hairline-strong);
+    border-radius: var(--ei-radius-pill);
+    background: color-mix(in srgb, var(--ei-surface-contrast) 60%, #000 6%);
+    color: var(--ei-on-contrast-muted);
+    font-size: 0.92rem;
+    text-align: center;
+  }
+  .ei-rule strong {
+    color: var(--ei-gold);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .ei-rule__div {
+    width: 1px;
+    height: 18px;
+    background: var(--ei-hairline-strong);
+  }
+
+  /* Process steps */
+  .ei-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.25rem;
+    counter-reset: step;
+  }
+  .ei-step {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.4rem 1.2rem;
+    background: var(--ei-surface);
+    border: 1px solid var(--ei-hairline);
+    border-radius: var(--ei-radius-md);
+  }
+  .ei-step__n {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--ei-accent-soft);
+    color: var(--ei-accent-strong);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .ei-step h3 {
+    font-size: 1.02rem;
+  }
+  .ei-step p {
+    color: var(--ei-muted);
+    font-size: 0.92rem;
+  }
+
+  /* Check list */
+  .ei-check {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.7rem;
+  }
+  .ei-check li {
+    position: relative;
+    padding-left: 1.7rem;
+  }
+  .ei-check li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--ei-accent);
+    box-shadow: 0 0 0 4px var(--ei-accent-soft);
+  }
+
+  /* Contact CTA */
+  .ei-cta {
+    max-width: 60ch;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .ei-cta h2 {
+    margin-top: 0.7rem;
+  }
+  .ei-cta .ei-lead {
+    margin: 1rem auto 0;
+  }
+  .ei-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 960px) {
+    .ei-grid--3,
+    .ei-grid--4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .ei-steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .ei-split {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+  @media (max-width: 560px) {
+    .ei-grid--3,
+    .ei-grid--4,
+    .ei-steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,68 +1,75 @@
-# Euro Intermed Website V1
+# www.euro-intermed
 
-Static Romanian-first website for `euro-intermed.ro`, deployed as its own Vercel
-project. The AI chat widget is the single intake channel.
+Marketing site and B2B ecosystem hub for **Euro Intermed Solutions** — the parent
+brand routing every commercial opportunity to the right channel (PalletClearance,
+Angrosist, SkalYou). This is the **aesthetic anchor** of a three-site family; the
+design system, animation language and i18n scaffolding defined here are reused by
+the Angrosist and PalletClearance sites.
 
-## Files
+## Stack
 
-- `index.html` - public page and semantic content.
-- `tos.html` - Terms and conditions, served at `/tos` (clean URL).
-- `privacy.html` - Privacy policy, served at `/privacy` (clean URL).
-- `data-deletion.html` - Data deletion request page, served at `/data-deletion`. Required by Facebook/Meta app integration; currently a manual (email-based) request flow.
-- `css/styles.css` - scoped visual system using `ei-` classes.
-- `js/main.js` - route selection, WhatsApp links, FAQ.
-- `vercel.json` - static deploy config (clean URLs + redirects + security headers).
+- **[Astro](https://astro.build)** (static output) + **TypeScript**
+- **@astrojs/mdx** — legal pages authored in MDX
+- **@astrojs/sitemap** — `sitemap-index.xml`
+- **@fontsource-variable/dm-sans** — self-hosted variable font (no Google Fonts CDN, GDPR)
+- Deployed on **Vercel** (static; branch → env: `main` = prod, `staging` = staging)
 
-The old PHP `form-handler.php` email form has been removed (Vercel does not run
-PHP). Lead capture now goes through the embedded AI widget mounted into
-`#ai-widget-container`; WhatsApp / email / Calendly links remain as fallbacks.
+## Commands
 
-## Local preview
-
-```sh
-python3 -m http.server 8080
+```bash
+npm install       # install deps (commit package-lock.json — Vercel uses it)
+npm run dev       # local dev server
+npm run build     # astro build → ./dist
+npm run preview   # preview the production build
+npm run check     # astro check (type + template diagnostics)
 ```
 
-Open `http://127.0.0.1:8080`.
+## Project structure
 
-## Deploy & Widget
-
-Deploy this folder as a Vercel project. `build.mjs` runs as the build command and
-templates the widget embed into `dist/` (which Vercel serves). The widget is
-embedded before `</body>`, inside `<!-- WIDGET:START -->` / `<!-- WIDGET:END -->`
-markers, with a `__WIDGET_BASE_URL__` placeholder:
-
-```html
-<script src="__WIDGET_BASE_URL__/widget.js" defer></script>
-<script>
-  window.AngrosistChat.init({ containerId: "ai-widget-container",
-    vertical: "angrosist", lang: "ro", privacyUrl: "/privacy" });
-</script>
+```
+src/
+  components/     # BaseLayout, Nav, Hero, HeroFlow (animated diagram), Section,
+                  # Card, Button, FAQ, Footer, CookieBanner, LangToggle,
+                  # ThemeToggle, Analytics, Widget, Home, ContactPage
+  layouts/        # LegalLayout (for the MDX legal pages)
+  i18n/           # ui.ts (RO/EN dictionary), utils.ts (locale routing helpers)
+  lib/            # config.ts — the ONLY place env is read (Hard Rule #1)
+  scripts/        # site.ts — scroll-reveal IntersectionObserver + GA event delegation
+  styles/         # global.css — design tokens (light/dark) + animation keyframes
+  pages/          # ro at root, en mirrored under /en/
+public/           # favicon.svg, robots.txt (copied verbatim into dist/)
+astro.config.mjs  # site URL from env, i18n (ro default, en under /en/), sitemap, mdx
+vercel.json       # framework/build/output + security headers + legacy redirects
 ```
 
-**The widget origin and visibility are NOT hardcoded — set these per Vercel project:**
+## i18n
 
-| Env var | Default | Purpose |
+RO is the default locale (root paths); EN is mirrored under `/en/`. Copy lives in a
+single typed dictionary (`src/i18n/ui.ts`); every page ships both locales with
+`hreflang` alternates. The `LangToggle` links to the equivalent page in the other
+locale.
+
+## Configuration (env only — no hardcoded URLs/IDs)
+
+All external URLs / IDs / flags are read from the environment at build time in
+`src/lib/config.ts` (and `astro.config.mjs` for the site URL). This re-implements
+the old `build.mjs` env templating. Set these per Vercel project:
+
+| Var | Purpose | Default |
 |---|---|---|
-| `WIDGET_BASE_URL` | `https://dash.euro-intermed.com` | Origin serving `widget.js`. Set `https://staging-dash.euro-intermed.com` on the staging project. |
-| `WIDGET_ENABLED` | `true` | `false` removes the widget entirely from the page. |
-| `GA_MEASUREMENT_ID` | *(empty)* | GA4 Measurement ID, e.g. `G-XXXXXXX`; set per Vercel project. Leave empty to disable analytics (no GA snippet, no cookie banner). Injected into the `<!-- GA:START -->` / `<!-- GA:END -->` block at build time — never hardcoded. |
+| `WIDGET_ENABLED` | `"false"` strips the chat widget | `true` |
+| `WIDGET_BASE_URL` | origin serving `widget.js` | `https://dash.euro-intermed.com` |
+| `GA_MEASUREMENT_ID` | GA4 id; empty → no GA snippet + no cookie banner | *(unset)* |
+| `SITE_URL` / `PUBLIC_SITE_URL` | canonical origin (sitemap/canonical/hreflang) | `https://euro-intermed.ro` |
+| `PUBLIC_CONTACT_FORM_ACTION` | contact-form POST endpoint (empty → WhatsApp/email fallback) | *(unset)* |
+| `PUBLIC_WHATSAPP_NUMBER` | wa.me number (digits) | `40745799995` |
+| `PUBLIC_CONTACT_EMAIL` / `PUBLIC_CONTACT_PHONE` / `PUBLIC_CALENDLY_URL` | contact details | *(company defaults)* |
+| `PUBLIC_PALLETCLEARANCE_URL` / `PUBLIC_ANGROSIST_URL` / `PUBLIC_SKALYOU_URL` | sibling vertical links | *(prod URLs)* |
 
-Analytics uses Google Consent Mode v2 (analytics storage denied by default) with a
-lightweight cookie banner that grants consent on Accept and persists it in
-`localStorage`. The router also fires a `vertical_redirect` GA event (param
-`vertical` = `angrosist` \| `clearance` \| `skalyou`) when a vertical card/link is
-clicked, and a best-effort `chat_opened` event when the chat widget launcher is
-opened (KPI §A.2).
+GA4 uses **Consent Mode v2** — analytics storage stays `denied` until the visitor
+accepts in the cookie banner (choice persisted in `localStorage['ei-analytics-consent']`).
 
-`widget.js` is served by the deployed frontend project. The backend API URL is
-**baked into `widget.js` at build time** from the frontend's `VITE_API_URL` — the
-site does not pass `apiUrl`. To repoint the backend, change `VITE_API_URL` in the
-frontend deploy and rebuild `widget.js`; all embeds follow.
+## Accessibility & motion
 
-## Production notes
-
-- Privacy, terms, and data-deletion copy are practical drafts and need a final legal review before production.
-- `/data-deletion` currently instructs users to email their deletion request. For the Facebook/Meta integration you can keep these instructions or wire a real data-deletion-request callback endpoint; either satisfies Meta's requirement.
-- The qualification flow intentionally does not ask for CUI/VAT, file uploads, target price, packing lists, photos, or full commercial terms at first contact.
-- PalletClearance is presented as a confidential B2B clearance flow, not as a public listing or price marketplace.
+WCAG AA: labels, visible focus, keyboard nav, AA+ contrast in light and dark. All
+animation is CSS-first and wrapped in a `prefers-reduced-motion: reduce` off-switch.
