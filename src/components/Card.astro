@@ -62,7 +62,9 @@ const style = index != null ? `--i:${index}` : undefined
     border: 1px solid var(--ei-hairline);
     border-radius: var(--ei-radius-lg);
     box-shadow: var(--ei-shadow-sm);
-    color: inherit;
+    /* A card is always a LIGHT surface — pin its text to the dark ink so it never
+       inherits a dark band's light on-contrast color (which ghosts on white). */
+    color: var(--ei-ink);
     transition:
       transform 0.3s var(--ei-ease-out),
       box-shadow 0.3s var(--ei-ease),
@@ -83,6 +85,7 @@ const style = index != null ? `--i:${index}` : undefined
   }
   .ei-card__title {
     font-size: 1.2rem;
+    color: var(--ei-ink);
   }
   .ei-card :global(p) {
     color: var(--ei-muted);

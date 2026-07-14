@@ -37,8 +37,10 @@ const { id, tone = 'default', labelledby, class: className = '' } = Astro.props
     background: var(--ei-surface-contrast);
     color: var(--ei-on-contrast);
   }
-  .ei-section--contrast :global(h2),
-  .ei-section--contrast :global(h3) {
+  /* Recolor only the band's OWN headings — exclude headings inside nested light
+     surfaces (cards) so their titles keep the dark ink and don't ghost on white. */
+  .ei-section--contrast :global(h2:not(.ei-card__title)),
+  .ei-section--contrast :global(h3:not(.ei-card__title)) {
     color: var(--ei-on-contrast);
   }
   .ei-section--contrast :global(.ei-eyebrow) {
