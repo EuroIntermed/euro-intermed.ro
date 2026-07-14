@@ -9,8 +9,7 @@ export type Locale = 'ro' | 'en'
 
 const ro = {
   meta: {
-    homeTitle:
-      'Euro Intermed Solutions | Ecosistem B2B pentru sourcing, clearance și extindere europeană',
+    homeTitle: 'Euro Intermed | Ecosistem B2B: sourcing, clearance, extindere',
     homeDescription:
       'Spui ce ai nevoie — vânzare de stoc, sourcing sau intrare pe piața din România — și te conectăm cu partenerul B2B potrivit. Răspuns pe WhatsApp, în minute.',
     contactTitle: 'Contact | Euro Intermed Solutions',
@@ -280,8 +279,7 @@ const ro = {
 
 const en: typeof ro = {
   meta: {
-    homeTitle:
-      'Euro Intermed Solutions | B2B ecosystem for sourcing, clearance & European expansion',
+    homeTitle: 'Euro Intermed | B2B ecosystem: sourcing, clearance, expansion',
     homeDescription:
       'Tell us what you need — selling stock, sourcing or entering the Romanian market — and we connect you with the right B2B partner. Reply on WhatsApp, in minutes.',
     contactTitle: 'Contact | Euro Intermed Solutions',
