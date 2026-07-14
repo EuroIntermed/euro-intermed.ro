@@ -72,11 +72,19 @@ export const contactEmail: string = str('PUBLIC_CONTACT_EMAIL', 'eurointermeds@g
 export const contactPhone: string = str('PUBLIC_CONTACT_PHONE', '+40745799995')
 export const calendlyUrl: string = str('PUBLIC_CALENDLY_URL', 'https://calendly.com/eurointermeds')
 
-/** Sibling verticals in the ecosystem — external URLs, env-overridable. */
+/**
+ * Sibling verticals in the ecosystem — external deep-link URLs, env-overridable
+ * (Hard Rule #1: no hardcoded URLs). Set PUBLIC_URL_ANGROSIST /
+ * PUBLIC_URL_PALLETCLEARANCE / PUBLIC_URL_SKALYOU per Vercel project. The legacy
+ * PUBLIC_*_URL names are still honoured as a fallback.
+ */
 export const verticalUrls = {
-  palletclearance: str('PUBLIC_PALLETCLEARANCE_URL', 'https://palletclearance.eu'),
-  angrosist: str('PUBLIC_ANGROSIST_URL', 'https://angrosist.ro'),
-  skalyou: str('PUBLIC_SKALYOU_URL', 'https://skalyou.com'),
+  angrosist: str('PUBLIC_URL_ANGROSIST', str('PUBLIC_ANGROSIST_URL', 'https://angrosist.ro')),
+  palletclearance: str(
+    'PUBLIC_URL_PALLETCLEARANCE',
+    str('PUBLIC_PALLETCLEARANCE_URL', 'https://palletclearance.com'),
+  ),
+  skalyou: str('PUBLIC_URL_SKALYOU', str('PUBLIC_SKALYOU_URL', 'https://skalyou.com')),
 }
 
 /** Build a wa.me deep link with a prefilled message. */

@@ -63,7 +63,9 @@ the old `build.mjs` env templating. Set these per Vercel project:
 | `SITE_URL` / `PUBLIC_SITE_URL` | canonical origin (sitemap/canonical/hreflang) | `https://euro-intermed.ro` |
 | `PUBLIC_WHATSAPP_NUMBER` | wa.me number (digits) | `40745799995` |
 | `PUBLIC_CONTACT_EMAIL` / `PUBLIC_CONTACT_PHONE` / `PUBLIC_CALENDLY_URL` | contact details | *(company defaults)* |
-| `PUBLIC_PALLETCLEARANCE_URL` / `PUBLIC_ANGROSIST_URL` / `PUBLIC_SKALYOU_URL` | sibling vertical links | *(prod URLs)* |
+| `PUBLIC_URL_ANGROSIST` | Angrosist deep-link | `https://angrosist.ro` |
+| `PUBLIC_URL_PALLETCLEARANCE` | PalletClearance deep-link | `https://palletclearance.com` |
+| `PUBLIC_URL_SKALYOU` | SkalYou deep-link | `https://skalyou.com` |
 
 GA4 uses **Consent Mode v2** — analytics storage stays `denied` until the visitor
 accepts in the cookie banner (choice persisted in `localStorage['ei-analytics-consent']`).
@@ -76,6 +78,70 @@ There is **no HTML contact form and no form-POST endpoint** anywhere on the site
 per B2B route, with email + phone as secondary options. This WhatsApp-only pattern
 is the **standard for all three ecosystem sites** (Euro-Intermed, Angrosist,
 PalletClearance) — do not reintroduce a contact form on any of them.
+
+## Per-vertical themes (swappable accent layer)
+
+The **neutral / type / spacing / shadow / animation** system is shared by all three
+ecosystem sites; only the **accent layer** changes. Selection is a single attribute
+on `<html>`: `data-vertical="euro-intermed | angrosist | palletclearance"`
+(BaseLayout sets `euro-intermed` here). All three accent layers ship in
+`src/styles/global.css`, so the Angrosist & PalletClearance rebuilds **just set
+their `data-vertical`** — no token surgery. Every pairing below is WCAG-AA verified
+in **both** light and dark.
+
+| Vertical | Primary accent | Secondary | Feel |
+|---|---|---|---|
+| **euro-intermed** | deep green `#1F6E4C` (dark `#45B07D`) | gold `#C9A84C` | premium hub / parent brand |
+| **angrosist** | teal-blue `#0E7C86` (dark `#2BB0BD`) | azure `#2E7DB5` | trade / trust / wholesale |
+| **palletclearance** | amber/terracotta `#C46A2A` (dark `#E08A4A`) | clay `#B5532F` | deals / logistics / clearance |
+
+The three primaries sit far apart on the hue wheel (green / cyan-blue / orange) so
+the sites read as clearly distinct, not "all green + gold" like the old ones.
+
+**Text tokens** (never put a raw accent/gold on pale as small text): use
+`--ei-accent-text` for accent links/eyebrows and `--ei-gold-text` for the secondary;
+`--ei-accent` / `--ei-gold` are for **fills / decoration** only. `--ei-accent-ink`
+is the text on an accent fill (white for green/teal, near-black `#2a1406` on PC
+amber). `--ei-accent-hover` is the button-hover fill (PC *lightens* on hover to keep
+its dark ink readable). `--ei-eyebrow-band` is the eyebrow colour on the dark
+contrast band.
+
+### Contrast audit — key ratios (before → after)
+
+Fixes from the audit (all now pass; both themes verified):
+
+| Pairing (LIGHT) | Before | After | Min |
+|---|---|---|---|
+| faint label / ground | 2.89 ✗ | **3.57** | 3.0 |
+| gold as small text / ground | 2.17 ✗ | **6.33** (`--ei-gold-text`) | 4.5 |
+| eyebrow (accent) / ground | 5.87 | **7.13** (`--ei-accent-text`) | 4.5 |
+| focus ring / dark band | 2.66 ✗ | **4.87** (brighter `--ei-focus`) | 3.0 |
+| angrosist eyebrow / teal band | 3.69 ✗ | **7.00** (`--ei-eyebrow-band`) | 4.5 |
+| palletclearance button ink / hover bg | 2.3 ✗ | **5.09** (`--ei-accent-hover`) | 4.5 |
+
+Representative passes (unchanged, both themes): ink/ground 15.9 (light) · 16.1
+(dark); muted/ground 5.86 · 8.72; accent-ink on accent (button) 6.19 · 6.87;
+whatsapp-ink on WhatsApp green 8.23; on-contrast on band 14.7+. Every per-vertical
+`accent-text`, `gold-text`, button-ink, focus and eyebrow-on-band pairing was
+recomputed to ≥4.5 (text) / ≥3.0 (labels, focus) in light **and** dark.
+
+## Content standard (concise, benefit-led + cross-vertical deeplinks)
+
+Marketing copy across all three sites follows one standard:
+
+- **Sell the outcome, not the mechanism.** Punchy headline + one-line subhead.
+- **Short & scannable:** 1–3-line paragraphs, strong subheads, tight bullets,
+  concrete value ("verificate după CUI", "răspuns pe WhatsApp în minute",
+  "acoperire B2B în Europa"). Cut filler and repetition.
+- **Clear IA:** logical order, anchored nav, one obvious primary CTA per section
+  (WhatsApp / AI widget). Lean home spine: hero → value strip → 3 vertical cards →
+  3-step how-it-works → trust strip → FAQ → final WhatsApp CTA.
+- **Full RO/EN parity**, EN idiomatic (not literal).
+- **Cross-vertical deeplinks:** the hub prominently links out to each vertical with a
+  sharp value line + CTA (Angrosist → "Trimite necesarul, primești oferta B2B
+  potrivită"; PalletClearance → "Vinde-ți stocul sau cumpără loturi la clearance";
+  SkalYou → soft "în dezvoltare"), tied to the three hero-diagram nodes. Destination
+  URLs are env-configurable (`PUBLIC_URL_*`).
 
 ## Accessibility & motion
 
