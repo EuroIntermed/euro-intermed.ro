@@ -21,20 +21,35 @@ const privacyUrl = localizePath('/confidentialitate', locale)
   widgetEnabled && (
     <>
       <script is:inline src={`${widgetBaseUrl}/widget.js`} defer />
-      <script is:inline define:vars={{ lang: locale, privacyUrl }}>
+      <script
+        is:inline
+        define:vars={{ lang: locale, privacyUrl, accent: '#1f6e4c', accentText: '#ffffff' }}
+      >
         {`
-        window.addEventListener('DOMContentLoaded', function () {
-          if (!window.AngrosistChat) return;
-          // No containerId → floating launcher button (bottom-right). Router
-          // vertical: the triage agent classifies the inbound need and re-routes
-          // the conversation into the concrete flow.
-          window.AngrosistChat.init({
+        // Poll for the deferred widget bundle instead of bailing on a single
+        // DOMContentLoaded check: widget.js loads with 'defer', so AngrosistChat
+        // may not exist yet when this inline script runs. Retry (up to ~10s) until
+        // init is available, then mount the floating launcher exactly once. Router
+        // vertical: the triage agent classifies the inbound need and re-routes the
+        // conversation into the concrete flow.
+        (function () {
+          var cfg = {
             vertical: 'euro-intermed',
             intent: 'triage',
             lang: lang,
-            privacyUrl: privacyUrl
-          });
-        });
+            privacyUrl: privacyUrl,
+            accent: accent,
+            accentText: accentText
+          };
+          var n = 0;
+          (function go() {
+            if (window.AngrosistChat && window.AngrosistChat.init) {
+              window.AngrosistChat.init(cfg);
+              return;
+            }
+            if (n++ < 200) setTimeout(go, 50);
+          })();
+        })();
       `}
       </script>
     </>
