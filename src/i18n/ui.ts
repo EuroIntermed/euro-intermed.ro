@@ -250,75 +250,63 @@ const ro = {
     whatsapp: 'Scrie-ne pe WhatsApp',
   },
   contact: {
-    eyebrow: 'Trimite o cerere',
-    title: 'Trimite o cerere B2B',
-    lead: 'Primul contact este scurt. Dacă e nevoie, îți cerem ulterior detalii despre documente, preț, poze, packing list sau condiții comerciale.',
-    form: {
-      name: 'Persoană de contact',
-      company: 'Numele companiei',
-      country: 'Țara',
-      email: 'Email',
-      phone: 'Telefon / WhatsApp',
-      intent: 'Ce vrei să faci?',
-      intentOptions: [
-        {
-          value: 'seller-flow',
-          label: 'Vreau să vând stoc',
-          wa: 'Buna ziua. Vreau sa vand stoc. Categorie: ___ · Tip stoc: ___ · Cantitate: ___ · Locatie: ___',
-        },
-        {
-          value: 'buyer-flow',
-          label: 'Vreau să cumpăr marfă',
-          wa: 'Buna ziua. Vreau sa cumpar marfa. Categorie: ___ · Volum: ___ · Livrare: ___',
-        },
-        {
-          value: 'sourcing-flow',
-          label: 'Am nevoie de sourcing',
-          wa: 'Buna ziua. Am nevoie de sourcing B2B. Produs/categorie: ___ · Cantitate: ___ · Livrare: ___',
-        },
-        {
-          value: 'market-entry-flow',
-          label: 'Vreau să intru pe piața din România',
-          wa: 'Buna ziua. Sunt furnizor european si vreau sa intru pe piata din Romania. Produs: ___ · Piete actuale: ___',
-        },
-        {
-          value: 'other-b2b-flow',
-          label: 'Altă oportunitate B2B',
-          wa: 'Buna ziua. Am o oportunitate B2B si vreau sa discut cu Euro Intermed. Detalii: ___',
-        },
-      ],
-      message: 'Detalii (categorie, cantitate, locație, obiectiv)',
-      consent:
-        'Confirm că solicitarea este B2B și că Euro Intermed poate folosi datele pentru a-mi răspunde.',
-      submit: 'Trimite cererea',
-      submitting: 'Se trimite...',
-      required: 'Câmp obligatoriu.',
-      invalidEmail: 'Adaugă o adresă de email validă.',
-      contactRequired: 'Adaugă un email sau un telefon/WhatsApp.',
-      consentRequired: 'Bifează confirmarea pentru a putea trimite cererea.',
-      success:
-        'Am primit cererea ta. Echipa va analiza informațiile și va reveni cu următorul pas.',
-      error:
-        'Ceva nu a funcționat. Te rugăm să încerci din nou sau să folosești WhatsApp / email.',
-      noEndpoint:
-        'Trimiterea online nu este încă activată. Continuă pe WhatsApp sau prin email.',
+    eyebrow: 'Contact',
+    title: 'Continuă pe WhatsApp',
+    lead: 'Fără formulare. Alege ce descrie cererea ta, iar noi pregătim mesajul de WhatsApp pentru tine. Poți folosi și asistentul AI din colțul paginii — același flux, calificat în timp real.',
+    chooseLabel: 'Alege ce descrie cererea ta',
+    intentOptions: [
+      {
+        value: 'seller-flow',
+        label: 'Vreau să vând stoc',
+        wa: 'Buna ziua. Vreau sa vand stoc. Categorie: ___ · Tip stoc: ___ · Cantitate: ___ · Locatie: ___',
+      },
+      {
+        value: 'buyer-flow',
+        label: 'Vreau să cumpăr marfă',
+        wa: 'Buna ziua. Vreau sa cumpar marfa. Categorie: ___ · Volum: ___ · Livrare: ___',
+      },
+      {
+        value: 'sourcing-flow',
+        label: 'Am nevoie de sourcing',
+        wa: 'Buna ziua. Am nevoie de sourcing B2B. Produs/categorie: ___ · Cantitate: ___ · Livrare: ___',
+      },
+      {
+        value: 'market-entry-flow',
+        label: 'Vreau să intru pe piața din România',
+        wa: 'Buna ziua. Sunt furnizor european si vreau sa intru pe piata din Romania. Produs: ___ · Piete actuale: ___',
+      },
+      {
+        value: 'skalyou-flow',
+        label: 'Vreau scalare B2B cu AI',
+        wa: 'Buna ziua. Vreau sa discut despre scalare B2B / digitalizare. Provocare actuala: ___',
+      },
+      {
+        value: 'other-b2b-flow',
+        label: 'Altă oportunitate B2B',
+        wa: 'Buna ziua. Am o oportunitate B2B si vreau sa discut cu Euro Intermed. Detalii: ___',
+      },
+    ],
+    whatsapp: {
+      helper: 'Mesajul de WhatsApp se precompletează în funcție de intenția aleasă.',
+      cta: 'Scrie-ne pe WhatsApp',
     },
-    aside: {
-      whatsappEyebrow: 'Contact rapid',
-      whatsappTitle: 'Continuă pe WhatsApp',
-      whatsappHelper:
-        'Alege o intenție și mesajul de WhatsApp se precompletează pentru tine.',
-      whatsappCta: 'Scrie-ne pe WhatsApp',
-      nextEyebrow: 'Ce urmează',
-      next: [
+    widget: {
+      eyebrow: 'Asistent B2B',
+      title: 'Sau discută cu asistentul AI',
+      body: 'Asistentul din colțul din dreapta-jos califică și direcționează cererea ta în timp real, pe același flux ca WhatsApp.',
+    },
+    next: {
+      eyebrow: 'Ce urmează',
+      items: [
         'Cererea este analizată în funcție de ruta aleasă.',
         'Echipa poate cere detalii suplimentare dacă există o potrivire.',
         'CUI-ul, documentele și prețurile se discută ulterior, nu la primul pas.',
       ],
-      directEyebrow: 'Contact direct',
+    },
+    direct: {
+      eyebrow: 'Contact direct',
       email: 'Email',
       phone: 'Telefon',
-      calendly: 'Programează o discuție',
       calendlyCta: 'Deschide Calendly',
     },
   },
@@ -598,75 +586,63 @@ const en: typeof ro = {
     whatsapp: 'Message us on WhatsApp',
   },
   contact: {
-    eyebrow: 'Send a request',
-    title: 'Send a B2B request',
-    lead: 'The first contact is short. If needed, we later ask for details about documents, price, photos, packing list or commercial terms.',
-    form: {
-      name: 'Contact person',
-      company: 'Company name',
-      country: 'Country',
-      email: 'Email',
-      phone: 'Phone / WhatsApp',
-      intent: 'What do you want to do?',
-      intentOptions: [
-        {
-          value: 'seller-flow',
-          label: 'I want to sell stock',
-          wa: 'Hello. I want to sell stock. Category: ___ · Stock type: ___ · Quantity: ___ · Location: ___',
-        },
-        {
-          value: 'buyer-flow',
-          label: 'I want to buy goods',
-          wa: 'Hello. I want to buy goods. Category: ___ · Volume: ___ · Delivery: ___',
-        },
-        {
-          value: 'sourcing-flow',
-          label: 'I need sourcing',
-          wa: 'Hello. I need B2B sourcing. Product/category: ___ · Quantity: ___ · Delivery: ___',
-        },
-        {
-          value: 'market-entry-flow',
-          label: 'I want to enter the Romanian market',
-          wa: 'Hello. I am a European supplier and want to enter the Romanian market. Product: ___ · Current markets: ___',
-        },
-        {
-          value: 'other-b2b-flow',
-          label: 'Another B2B opportunity',
-          wa: 'Hello. I have a B2B opportunity and want to talk to Euro Intermed. Details: ___',
-        },
-      ],
-      message: 'Details (category, quantity, location, objective)',
-      consent:
-        'I confirm this is a B2B request and that Euro Intermed may use the data to reply to me.',
-      submit: 'Send request',
-      submitting: 'Sending...',
-      required: 'Required field.',
-      invalidEmail: 'Add a valid email address.',
-      contactRequired: 'Add an email or a phone/WhatsApp number.',
-      consentRequired: 'Tick the confirmation to send the request.',
-      success:
-        'We received your request. The team will review the information and follow up with the next step.',
-      error:
-        'Something went wrong. Please try again or use WhatsApp / email.',
-      noEndpoint:
-        'Online submission is not enabled yet. Please continue on WhatsApp or by email.',
+    eyebrow: 'Contact',
+    title: 'Continue on WhatsApp',
+    lead: 'No forms. Pick what describes your request and we prepare the WhatsApp message for you. You can also use the AI assistant in the corner of the page — the same flow, qualified in real time.',
+    chooseLabel: 'Pick what describes your request',
+    intentOptions: [
+      {
+        value: 'seller-flow',
+        label: 'I want to sell stock',
+        wa: 'Hello. I want to sell stock. Category: ___ · Stock type: ___ · Quantity: ___ · Location: ___',
+      },
+      {
+        value: 'buyer-flow',
+        label: 'I want to buy goods',
+        wa: 'Hello. I want to buy goods. Category: ___ · Volume: ___ · Delivery: ___',
+      },
+      {
+        value: 'sourcing-flow',
+        label: 'I need sourcing',
+        wa: 'Hello. I need B2B sourcing. Product/category: ___ · Quantity: ___ · Delivery: ___',
+      },
+      {
+        value: 'market-entry-flow',
+        label: 'I want to enter the Romanian market',
+        wa: 'Hello. I am a European supplier and want to enter the Romanian market. Product: ___ · Current markets: ___',
+      },
+      {
+        value: 'skalyou-flow',
+        label: 'I want AI-assisted B2B scaling',
+        wa: 'Hello. I want to discuss B2B scaling / digitalisation. Current challenge: ___',
+      },
+      {
+        value: 'other-b2b-flow',
+        label: 'Another B2B opportunity',
+        wa: 'Hello. I have a B2B opportunity and want to talk to Euro Intermed. Details: ___',
+      },
+    ],
+    whatsapp: {
+      helper: 'The WhatsApp message pre-fills based on the intent you choose.',
+      cta: 'Message us on WhatsApp',
     },
-    aside: {
-      whatsappEyebrow: 'Quick contact',
-      whatsappTitle: 'Continue on WhatsApp',
-      whatsappHelper:
-        'Pick an intent and the WhatsApp message pre-fills for you.',
-      whatsappCta: 'Message us on WhatsApp',
-      nextEyebrow: 'What happens next',
-      next: [
+    widget: {
+      eyebrow: 'B2B assistant',
+      title: 'Or talk to the AI assistant',
+      body: 'The assistant in the bottom-right corner qualifies and routes your request in real time, on the same flow as WhatsApp.',
+    },
+    next: {
+      eyebrow: 'What happens next',
+      items: [
         'The request is reviewed based on the chosen route.',
         'The team may ask for more details if there is a match.',
         'VAT, documents and prices are discussed later, not at the first step.',
       ],
-      directEyebrow: 'Direct contact',
+    },
+    direct: {
+      eyebrow: 'Direct contact',
       email: 'Email',
       phone: 'Phone',
-      calendly: 'Book a call',
       calendlyCta: 'Open Calendly',
     },
   },

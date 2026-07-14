@@ -1,48 +1,46 @@
 /* =========================================================================
    Euro-Intermed design system — shared token layer + animation language.
-   Anchor site of a three-site family: premium ecosystem = deep green + gold on
-   a warm pale ground. Style everything through tokens; never hardcode a colour
-   in a component.
+   Anchor of a THREE-SITE family. The NEUTRAL / type / spacing / shadow /
+   animation system is shared by all three; only the ACCENT LAYER changes per
+   vertical, selected with `data-vertical` on <html>:
+     euro-intermed   -> deep green + gold    (default / this site)
+     angrosist       -> teal-blue + azure
+     palletclearance -> amber/terracotta + clay
+   Every accent pairing is WCAG-AA verified in BOTH light and dark (see README).
+
+   TOKEN CONVENTIONS
+   - --ei-accent        vivid accent for FILLS / decoration (button bg, dots).
+   - --ei-accent-text   AA-on-pale accent for SMALL TEXT / links / eyebrows.
+   - --ei-accent-hover  button hover bg (keeps --ei-accent-ink readable).
+   - --ei-accent-ink    text placed on an accent fill (white or near-black).
+   - --ei-gold*         the SECONDARY accent slot. For euro-intermed it is
+                        literally gold; for angrosist it is azure, for
+                        palletclearance clay. --ei-gold-text is the AA-on-pale
+                        secondary for small text; --ei-gold is decorative only.
+   - --ei-eyebrow-band  eyebrow colour on the dark contrast band (AA on band).
+   Style everything through tokens; never hardcode a colour in a component.
    ========================================================================= */
 
-/* ---- Tokens: LIGHT (default) ------------------------------------------- */
+/* ---- NEUTRAL LAYER: LIGHT (shared by all verticals) -------------------- */
 :root {
   color-scheme: light;
 
-  /* Grounds & surfaces — warm pale, slight green bias */
+  /* Grounds & surfaces — warm pale */
   --ei-ground: #faf9f5;
   --ei-ground-2: #f3f2ea;
   --ei-surface: #ffffff;
   --ei-surface-raised: #f7f6f0;
-  --ei-surface-contrast: #10231a; /* deep green band on light pages */
 
   /* Text */
   --ei-ink: #16201a;
   --ei-ink-soft: #2c3a32;
   --ei-muted: #55655c;
-  --ei-faint: #8a978f;
+  --ei-faint: #76857b; /* AA>=3 as label text on pale */
   --ei-on-contrast: #eef4ef;
-  --ei-on-contrast-muted: #a9bcb0;
 
-  /* Hairlines / borders — green-biased */
-  --ei-hairline: rgba(31, 110, 76, 0.14);
-  --ei-hairline-strong: rgba(31, 110, 76, 0.24);
-
-  /* Accents */
-  --ei-accent: #1f6e4c;
-  --ei-accent-strong: #17583c;
-  --ei-accent-soft: rgba(31, 110, 76, 0.1);
-  --ei-accent-ink: #ffffff; /* text on accent fills */
-
-  --ei-gold: #c9a84c;
-  --ei-gold-strong: #b0902f;
-  --ei-gold-soft: rgba(201, 168, 76, 0.16);
-
+  /* Shared brand channel (WhatsApp) — same across verticals */
   --ei-whatsapp: #25d366;
   --ei-whatsapp-ink: #06251a;
-
-  /* Focus ring */
-  --ei-focus: #1f6e4c;
 
   /* Radius scale */
   --ei-radius-xs: 6px;
@@ -64,11 +62,11 @@
   --ei-space-9: 6rem;
   --ei-space-10: 8rem;
 
-  /* Shadows — soft, warm, low */
+  /* Shadows — soft, warm, low; glow tinted by the per-vertical --ei-glow */
   --ei-shadow-sm: 0 1px 2px rgba(22, 32, 26, 0.05), 0 1px 3px rgba(22, 32, 26, 0.04);
   --ei-shadow-md: 0 6px 20px rgba(22, 32, 26, 0.07), 0 2px 6px rgba(22, 32, 26, 0.05);
   --ei-shadow-lg: 0 24px 60px rgba(16, 35, 26, 0.12), 0 8px 24px rgba(16, 35, 26, 0.08);
-  --ei-shadow-glow: 0 0 60px rgba(31, 110, 76, 0.16);
+  --ei-shadow-glow: 0 0 60px var(--ei-glow);
 
   /* Layout */
   --ei-container: 1160px;
@@ -82,82 +80,204 @@
   --ei-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ei-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ei-dur: 0.7s;
+
+  /* ---- ACCENT LAYER default = EURO-INTERMED (green + gold), LIGHT ---- */
+  --ei-accent: #1f6e4c;
+  --ei-accent-strong: #17583c;
+  --ei-accent-text: #1a6042;
+  --ei-accent-soft: rgba(31, 110, 76, 0.1);
+  --ei-accent-ink: #ffffff;
+  --ei-accent-hover: #17583c;
+  --ei-glow: rgba(31, 110, 76, 0.16);
+  --ei-focus: #2f9e6a;
+
+  --ei-gold: #c9a84c;
+  --ei-gold-strong: #b0902f;
+  --ei-gold-text: #6f5a12;
+  --ei-gold-soft: rgba(201, 168, 76, 0.16);
+
+  --ei-hairline: rgba(31, 110, 76, 0.16);
+  --ei-hairline-strong: rgba(31, 110, 76, 0.26);
+
+  --ei-surface-contrast: #10231a; /* dark green band */
+  --ei-on-contrast-muted: #a9bcb0;
+  --ei-eyebrow-band: #c9a84c;
 }
 
-/* ---- Tokens: DARK ------------------------------------------------------- */
+/* ---- ACCENT LAYER: ANGROSIST (teal-blue + azure), LIGHT --------------- */
+:root[data-vertical='angrosist'] {
+  --ei-accent: #0e7c86;
+  --ei-accent-strong: #0a616a;
+  --ei-accent-text: #0a616a;
+  --ei-accent-soft: rgba(14, 124, 134, 0.1);
+  --ei-accent-ink: #ffffff;
+  --ei-accent-hover: #0a616a;
+  --ei-glow: rgba(14, 124, 134, 0.16);
+  --ei-focus: #128a97;
+
+  --ei-gold: #2e7db5;
+  --ei-gold-strong: #1c5c8c;
+  --ei-gold-text: #1c5c8c;
+  --ei-gold-soft: rgba(46, 125, 181, 0.16);
+
+  --ei-hairline: rgba(14, 124, 134, 0.16);
+  --ei-hairline-strong: rgba(14, 124, 134, 0.26);
+
+  --ei-surface-contrast: #08262b; /* dark teal band */
+  --ei-on-contrast-muted: #a3bcc4;
+  --ei-eyebrow-band: #6fb4de;
+}
+
+/* ---- ACCENT LAYER: PALLETCLEARANCE (amber/terracotta + clay), LIGHT --- */
+:root[data-vertical='palletclearance'] {
+  --ei-accent: #c46a2a;
+  --ei-accent-strong: #9c4e1c;
+  --ei-accent-text: #98491a;
+  --ei-accent-soft: rgba(196, 106, 42, 0.1);
+  --ei-accent-ink: #2a1406; /* dark ink — white fails on amber */
+  --ei-accent-hover: #d0721f; /* hover LIGHTENS to keep dark ink readable */
+  --ei-glow: rgba(196, 106, 42, 0.16);
+  --ei-focus: #d0721f;
+
+  --ei-gold: #b5532f;
+  --ei-gold-strong: #8f3f22;
+  --ei-gold-text: #8f3f22;
+  --ei-gold-soft: rgba(181, 83, 47, 0.16);
+
+  --ei-hairline: rgba(196, 106, 42, 0.16);
+  --ei-hairline-strong: rgba(196, 106, 42, 0.26);
+
+  --ei-surface-contrast: #26150b; /* dark clay band */
+  --ei-on-contrast-muted: #c6b0a0;
+  --ei-eyebrow-band: #e88f6b;
+}
+
+/* ---- NEUTRAL LAYER: DARK (shared) + per-vertical DARK accents ---------- */
+/* Auto (OS) dark, unless the toggle forced light. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-
-    --ei-ground: #0c1611;
+    --ei-ground: #0b1512;
     --ei-ground-2: #0f1c15;
     --ei-surface: #12211a;
     --ei-surface-raised: #16281f;
-    --ei-surface-contrast: #081410;
-
     --ei-ink: #e9f1eb;
     --ei-ink-soft: #d3dfd7;
     --ei-muted: #a4b6ab;
-    --ei-faint: #6f8177;
-    --ei-on-contrast: #eef4ef;
-    --ei-on-contrast-muted: #9fb2a7;
-
-    --ei-hairline: rgba(201, 168, 76, 0.16);
-    --ei-hairline-strong: rgba(201, 168, 76, 0.28);
-
-    --ei-accent: #45b07d;
-    --ei-accent-strong: #5cc492;
-    --ei-accent-soft: rgba(69, 176, 125, 0.14);
-    --ei-accent-ink: #06160f;
-
-    --ei-gold: #dcc077;
-    --ei-gold-strong: #e6cf8f;
-    --ei-gold-soft: rgba(220, 192, 119, 0.14);
-
-    --ei-focus: #5cc492;
-
+    --ei-faint: #7d9086;
     --ei-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --ei-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.4);
     --ei-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55), 0 8px 24px rgba(0, 0, 0, 0.45);
-    --ei-shadow-glow: 0 0 70px rgba(69, 176, 125, 0.2);
+    /* EI dark accents (default) */
+    --ei-accent: #45b07d;
+    --ei-accent-strong: #5cc492;
+    --ei-accent-text: #57c08c;
+    --ei-accent-soft: rgba(69, 176, 125, 0.14);
+    --ei-accent-ink: #06160f;
+    --ei-accent-hover: #5cc492;
+    --ei-glow: rgba(69, 176, 125, 0.2);
+    --ei-focus: #5cc492;
+    --ei-gold: #dcc077;
+    --ei-gold-strong: #e6cf8f;
+    --ei-gold-text: #dcc077;
+    --ei-gold-soft: rgba(220, 192, 119, 0.14);
+    --ei-hairline: rgba(201, 168, 76, 0.16);
+    --ei-hairline-strong: rgba(201, 168, 76, 0.28);
+  }
+  :root:not([data-theme='light'])[data-vertical='angrosist'] {
+    --ei-accent: #2bb0bd;
+    --ei-accent-strong: #4cc6d1;
+    --ei-accent-text: #4cc6d1;
+    --ei-accent-soft: rgba(43, 176, 189, 0.14);
+    --ei-accent-ink: #04191b;
+    --ei-accent-hover: #4cc6d1;
+    --ei-glow: rgba(43, 176, 189, 0.2);
+    --ei-focus: #4cc6d1;
+    --ei-gold: #6fb4de;
+    --ei-gold-strong: #8fc6e6;
+    --ei-gold-text: #8fc6e6;
+    --ei-gold-soft: rgba(111, 180, 222, 0.14);
+    --ei-hairline: rgba(111, 180, 222, 0.16);
+    --ei-hairline-strong: rgba(111, 180, 222, 0.28);
+  }
+  :root:not([data-theme='light'])[data-vertical='palletclearance'] {
+    --ei-accent: #e08a4a;
+    --ei-accent-strong: #eaa06a;
+    --ei-accent-text: #eaa06a;
+    --ei-accent-soft: rgba(224, 138, 74, 0.14);
+    --ei-accent-ink: #241004;
+    --ei-accent-hover: #eaa06a;
+    --ei-glow: rgba(224, 138, 74, 0.2);
+    --ei-focus: #eaa06a;
+    --ei-gold: #e88f6b;
+    --ei-gold-strong: #f0a888;
+    --ei-gold-text: #f0a888;
+    --ei-gold-soft: rgba(232, 143, 107, 0.14);
+    --ei-hairline: rgba(232, 143, 107, 0.16);
+    --ei-hairline-strong: rgba(232, 143, 107, 0.28);
   }
 }
 
-/* Explicit toggle overrides (the theme switch stamps data-theme on <html>) */
+/* Explicit toggle (the theme switch stamps data-theme='dark' on <html>). */
 :root[data-theme='dark'] {
   color-scheme: dark;
-
-  --ei-ground: #0c1611;
+  --ei-ground: #0b1512;
   --ei-ground-2: #0f1c15;
   --ei-surface: #12211a;
   --ei-surface-raised: #16281f;
-  --ei-surface-contrast: #081410;
-
   --ei-ink: #e9f1eb;
   --ei-ink-soft: #d3dfd7;
   --ei-muted: #a4b6ab;
-  --ei-faint: #6f8177;
-  --ei-on-contrast: #eef4ef;
-  --ei-on-contrast-muted: #9fb2a7;
-
-  --ei-hairline: rgba(201, 168, 76, 0.16);
-  --ei-hairline-strong: rgba(201, 168, 76, 0.28);
-
-  --ei-accent: #45b07d;
-  --ei-accent-strong: #5cc492;
-  --ei-accent-soft: rgba(69, 176, 125, 0.14);
-  --ei-accent-ink: #06160f;
-
-  --ei-gold: #dcc077;
-  --ei-gold-strong: #e6cf8f;
-  --ei-gold-soft: rgba(220, 192, 119, 0.14);
-
-  --ei-focus: #5cc492;
-
+  --ei-faint: #7d9086;
   --ei-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --ei-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.4);
   --ei-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55), 0 8px 24px rgba(0, 0, 0, 0.45);
-  --ei-shadow-glow: 0 0 70px rgba(69, 176, 125, 0.2);
+  --ei-accent: #45b07d;
+  --ei-accent-strong: #5cc492;
+  --ei-accent-text: #57c08c;
+  --ei-accent-soft: rgba(69, 176, 125, 0.14);
+  --ei-accent-ink: #06160f;
+  --ei-accent-hover: #5cc492;
+  --ei-glow: rgba(69, 176, 125, 0.2);
+  --ei-focus: #5cc492;
+  --ei-gold: #dcc077;
+  --ei-gold-strong: #e6cf8f;
+  --ei-gold-text: #dcc077;
+  --ei-gold-soft: rgba(220, 192, 119, 0.14);
+  --ei-hairline: rgba(201, 168, 76, 0.16);
+  --ei-hairline-strong: rgba(201, 168, 76, 0.28);
+}
+:root[data-theme='dark'][data-vertical='angrosist'] {
+  --ei-accent: #2bb0bd;
+  --ei-accent-strong: #4cc6d1;
+  --ei-accent-text: #4cc6d1;
+  --ei-accent-soft: rgba(43, 176, 189, 0.14);
+  --ei-accent-ink: #04191b;
+  --ei-accent-hover: #4cc6d1;
+  --ei-glow: rgba(43, 176, 189, 0.2);
+  --ei-focus: #4cc6d1;
+  --ei-gold: #6fb4de;
+  --ei-gold-strong: #8fc6e6;
+  --ei-gold-text: #8fc6e6;
+  --ei-gold-soft: rgba(111, 180, 222, 0.14);
+  --ei-hairline: rgba(111, 180, 222, 0.16);
+  --ei-hairline-strong: rgba(111, 180, 222, 0.28);
+}
+:root[data-theme='dark'][data-vertical='palletclearance'] {
+  --ei-accent: #e08a4a;
+  --ei-accent-strong: #eaa06a;
+  --ei-accent-text: #eaa06a;
+  --ei-accent-soft: rgba(224, 138, 74, 0.14);
+  --ei-accent-ink: #241004;
+  --ei-accent-hover: #eaa06a;
+  --ei-glow: rgba(224, 138, 74, 0.2);
+  --ei-focus: #eaa06a;
+  --ei-gold: #e88f6b;
+  --ei-gold-strong: #f0a888;
+  --ei-gold-text: #f0a888;
+  --ei-gold-soft: rgba(232, 143, 107, 0.14);
+  --ei-hairline: rgba(232, 143, 107, 0.16);
+  --ei-hairline-strong: rgba(232, 143, 107, 0.28);
 }
 
 /* ---- Reset & base ------------------------------------------------------- */
@@ -263,7 +383,7 @@ button {
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ei-accent);
+  color: var(--ei-accent-text);
 }
 
 .ei-lead {

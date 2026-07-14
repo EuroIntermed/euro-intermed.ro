@@ -18,7 +18,6 @@
  *   GA_MEASUREMENT_ID        GA4 Measurement ID, e.g. "G-XXXXXXX". Empty/unset →
  *                            analytics + cookie banner are stripped entirely.
  *   SITE_URL / PUBLIC_SITE_URL  canonical site origin (also used by astro.config).
- *   PUBLIC_CONTACT_FORM_ACTION  optional POST endpoint for the contact form.
  *   PUBLIC_WHATSAPP_NUMBER   WhatsApp number (digits only) for wa.me routing.
  *   PUBLIC_CONTACT_EMAIL / PUBLIC_CONTACT_PHONE / PUBLIC_CALENDLY_URL  contact details.
  */
@@ -64,10 +63,10 @@ export const siteUrl: string = (
   .trim()
   .replace(/\/+$/, '')
 
-/** Optional contact-form POST endpoint. Empty → form falls back to WhatsApp/email only. */
-export const contactFormAction: string = str('PUBLIC_CONTACT_FORM_ACTION', '')
-
-/* ---- Public contact details (safe to expose; not secrets) --------------- */
+/* ---- Public contact details (safe to expose; not secrets) ---------------
+ * NOTE: there is intentionally NO contact-form POST endpoint. The site is
+ * WhatsApp-first (wa.me deep links) + the AI chat widget; this is the standard
+ * for all three ecosystem sites. Do not add a form-action env var back. */
 export const whatsappNumber: string = str('PUBLIC_WHATSAPP_NUMBER', '40745799995')
 export const contactEmail: string = str('PUBLIC_CONTACT_EMAIL', 'eurointermeds@gmail.com')
 export const contactPhone: string = str('PUBLIC_CONTACT_PHONE', '+40745799995')

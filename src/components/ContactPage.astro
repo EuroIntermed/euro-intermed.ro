@@ -1,109 +1,58 @@
 ---
 /**
- * ContactPage — B2B contact form (name / company / country / email / phone +
- * intent + message) with graceful client-side validation, plus a WhatsApp CTA
- * that pre-fills the wa.me message from the selected intent (migrated from the
- * old main.js routing). The form `action` comes from PUBLIC_CONTACT_FORM_ACTION;
- * when unset the form degrades to the WhatsApp / email fallback.
+ * ContactPage — WhatsApp-first B2B contact. There is NO contact form anywhere on
+ * the site (client decision): the two intake channels are (1) WhatsApp, via an
+ * intent chooser that pre-fills a wa.me message per B2B route, and (2) the AI
+ * chat widget (bottom-right launcher). Email + phone are shown as secondary
+ * options.
+ *
+ * DESIGN-SYSTEM NOTE (carries to the Angrosist & PalletClearance rebuilds):
+ * this WhatsApp-only contact pattern is the standard for all three sites — do
+ * NOT reintroduce an HTML contact form or a form-POST endpoint on any of them.
  */
 import type { Locale } from '../i18n/ui'
 import { t } from '../i18n/utils'
-import {
-  contactFormAction,
-  waLink,
-  contactEmail,
-  contactPhone,
-  calendlyUrl,
-} from '../lib/config'
+import { waLink, contactEmail, contactPhone, calendlyUrl } from '../lib/config'
 import BaseLayout from './BaseLayout.astro'
 import Button from './Button.astro'
 
 const { locale } = Astro.props as { locale: Locale }
 const c = t(locale)
-const f = c.contact.form
-const aside = c.contact.aside
-const options = f.intentOptions
-const defaultWa = options[options.length - 1].wa
+const ct = c.contact
+const options = ct.intentOptions
+// Default selection = the last, most generic route ("other B2B opportunity").
+const defaultIndex = options.length - 1
+const defaultWa = options[defaultIndex].wa
 ---
 
 <BaseLayout locale={locale} title={c.meta.contactTitle} description={c.meta.contactDescription}>
   <section class="ei-contact">
     <div class="ei-container ei-contact__grid">
       <div class="ei-contact__main" data-reveal>
-        <p class="ei-eyebrow">{c.contact.eyebrow}</p>
-        <h1>{c.contact.title}</h1>
-        <p class="ei-lead">{c.contact.lead}</p>
+        <p class="ei-eyebrow">{ct.eyebrow}</p>
+        <h1>{ct.title}</h1>
+        <p class="ei-lead">{ct.lead}</p>
 
-        <form
-          class="ei-form"
-          data-contact-form
-          action={contactFormAction || undefined}
-          method="post"
-          novalidate
-        >
-          <div class="ei-form__row">
-            <div class="ei-field">
-              <label for="cf-name">{f.name}</label>
-              <input id="cf-name" name="contact_person" type="text" autocomplete="name" required />
-              <p class="ei-field__err" data-err="contact_person"></p>
-            </div>
-            <div class="ei-field">
-              <label for="cf-company">{f.company}</label>
-              <input id="cf-company" name="company_name" type="text" autocomplete="organization" required />
-              <p class="ei-field__err" data-err="company_name"></p>
-            </div>
+        <div class="ei-wa" data-wa-chooser>
+          <p class="ei-wa__label" id="ei-intent-label">{ct.chooseLabel}</p>
+          <div class="ei-wa__chips" role="radiogroup" aria-labelledby="ei-intent-label">
+            {
+              options.map((o, i) => (
+                <label class="ei-chip">
+                  <input
+                    type="radio"
+                    name="ei-intent"
+                    value={o.value}
+                    data-wa={o.wa}
+                    checked={i === defaultIndex}
+                  />
+                  <span>{o.label}</span>
+                </label>
+              ))
+            }
           </div>
 
-          <div class="ei-form__row">
-            <div class="ei-field">
-              <label for="cf-country">{f.country}</label>
-              <input id="cf-country" name="country" type="text" autocomplete="country-name" required />
-              <p class="ei-field__err" data-err="country"></p>
-            </div>
-            <div class="ei-field">
-              <label for="cf-intent">{f.intent}</label>
-              <select id="cf-intent" name="selected_route" data-intent>
-                {options.map((o) => <option value={o.value} data-wa={o.wa}>{o.label}</option>)}
-              </select>
-            </div>
-          </div>
-
-          <div class="ei-form__row">
-            <div class="ei-field">
-              <label for="cf-email">{f.email}</label>
-              <input id="cf-email" name="email" type="email" autocomplete="email" inputmode="email" />
-              <p class="ei-field__err" data-err="email"></p>
-            </div>
-            <div class="ei-field">
-              <label for="cf-phone">{f.phone}</label>
-              <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" />
-              <p class="ei-field__err" data-err="phone"></p>
-            </div>
-          </div>
-
-          <div class="ei-field">
-            <label for="cf-message">{f.message}</label>
-            <textarea id="cf-message" name="message" rows="4"></textarea>
-          </div>
-
-          <label class="ei-consent">
-            <input type="checkbox" name="contact_consent" data-consent-check />
-            <span>{f.consent}</span>
-          </label>
-          <p class="ei-field__err" data-err="consent"></p>
-
-          <div class="ei-form__actions">
-            <Button variant="primary" type="submit" data-submit>{f.submit}</Button>
-            <p class="ei-form__status" data-status role="status" aria-live="polite"></p>
-          </div>
-        </form>
-      </div>
-
-      <aside class="ei-contact__aside">
-        <div class="ei-panel ei-panel--wa" data-reveal style="--i:1">
-          <p class="ei-eyebrow">{aside.whatsappEyebrow}</p>
-          <h2>{aside.whatsappTitle}</h2>
-          <p data-wa-helper>{aside.whatsappHelper}</p>
+          <p class="ei-wa__helper" data-wa-helper>{ct.whatsapp.helper}</p>
           <Button
             href={waLink(defaultWa)}
             variant="whatsapp"
@@ -111,141 +60,56 @@ const defaultWa = options[options.length - 1].wa
             rel="noopener"
             data-wa-link
             data-ga-vertical="whatsapp"
+            class="ei-wa__cta"
           >
-            {aside.whatsappCta}
+            {ct.whatsapp.cta}
           </Button>
+        </div>
+      </div>
+
+      <aside class="ei-contact__aside">
+        <div class="ei-panel ei-panel--accent" data-reveal style="--i:1">
+          <p class="ei-eyebrow">{ct.widget.eyebrow}</p>
+          <h2>{ct.widget.title}</h2>
+          <p>{ct.widget.body}</p>
         </div>
 
         <div class="ei-panel" data-reveal style="--i:2">
-          <p class="ei-eyebrow">{aside.nextEyebrow}</p>
+          <p class="ei-eyebrow">{ct.next.eyebrow}</p>
           <ul class="ei-panel__list">
-            {aside.next.map((item) => <li>{item}</li>)}
+            {ct.next.items.map((item) => <li>{item}</li>)}
           </ul>
         </div>
 
         <div class="ei-panel" data-reveal style="--i:3">
-          <p class="ei-eyebrow">{aside.directEyebrow}</p>
+          <p class="ei-eyebrow">{ct.direct.eyebrow}</p>
           <dl class="ei-panel__dl">
-            <dt>{aside.email}</dt>
+            <dt>{ct.direct.email}</dt>
             <dd><a href={`mailto:${contactEmail}`}>{contactEmail}</a></dd>
-            <dt>{aside.phone}</dt>
+            <dt>{ct.direct.phone}</dt>
             <dd><a href={`tel:${contactPhone}`}>{contactPhone}</a></dd>
           </dl>
-          <a class="ei-panel__cal" href={calendlyUrl} target="_blank" rel="noopener">{aside.calendlyCta} &rarr;</a>
+          <a class="ei-panel__cal" href={calendlyUrl} target="_blank" rel="noopener">{ct.direct.calendlyCta} &rarr;</a>
         </div>
       </aside>
     </div>
   </section>
 </BaseLayout>
 
-<script
-  is:inline
-  define:vars={{
-    waBase: waLink(),
-    msgs: {
-      required: f.required,
-      invalidEmail: f.invalidEmail,
-      contactRequired: f.contactRequired,
-      consentRequired: f.consentRequired,
-      success: f.success,
-      error: f.error,
-      noEndpoint: f.noEndpoint,
-      submitting: f.submitting,
-      submit: f.submit,
-    },
-    hasEndpoint: Boolean(contactFormAction),
-  }}
->
+<script is:inline define:vars={{ waBase: waLink() }}>
   {`
   (function () {
-    var form = document.querySelector('[data-contact-form]');
-    if (!form) return;
-    var intent = form.querySelector('[data-intent]');
-    var waLinkEl = document.querySelector('[data-wa-link]');
-    var status = form.querySelector('[data-status]');
-    var submit = form.querySelector('[data-submit]');
-    var consent = form.querySelector('[data-consent-check]');
-
-    function setErr(name, message) {
-      var el = form.querySelector('[data-err="' + name + '"]');
-      if (el) el.textContent = message || '';
+    var chooser = document.querySelector('[data-wa-chooser]');
+    if (!chooser) return;
+    var link = chooser.querySelector('[data-wa-link]');
+    var radios = chooser.querySelectorAll('input[name="ei-intent"]');
+    function update() {
+      var checked = chooser.querySelector('input[name="ei-intent"]:checked');
+      var text = checked ? checked.getAttribute('data-wa') : '';
+      if (link) link.setAttribute('href', text ? waBase + '?text=' + encodeURIComponent(text) : waBase);
     }
-    function clearErrs() {
-      form.querySelectorAll('[data-err]').forEach(function (e) { e.textContent = ''; });
-      status.textContent = '';
-      status.className = 'ei-form__status';
-    }
-    function val(name) {
-      var el = form.elements[name];
-      return el ? String(el.value || '').trim() : '';
-    }
-
-    // WhatsApp deep-link updates with the selected intent.
-    function updateWa() {
-      if (!waLinkEl || !intent) return;
-      var opt = intent.options[intent.selectedIndex];
-      var text = opt ? opt.getAttribute('data-wa') : '';
-      waLinkEl.setAttribute('href', text ? waBase + '?text=' + encodeURIComponent(text) : waBase);
-    }
-    if (intent) intent.addEventListener('change', updateWa);
-    updateWa();
-
-    function validate() {
-      clearErrs();
-      var ok = true;
-      [['contact_person'], ['company_name'], ['country']].forEach(function (f2) {
-        if (!val(f2[0])) { setErr(f2[0], msgs.required); ok = false; }
-      });
-      var email = val('email');
-      var phone = val('phone');
-      if (!email && !phone) {
-        setErr('email', msgs.contactRequired);
-        setErr('phone', msgs.contactRequired);
-        ok = false;
-      }
-      if (email && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
-        setErr('email', msgs.invalidEmail); ok = false;
-      }
-      if (!consent || !consent.checked) { setErr('consent', msgs.consentRequired); ok = false; }
-      return ok;
-    }
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (!validate()) {
-        var first = form.querySelector('[data-err]:not(:empty)');
-        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-      if (!hasEndpoint) {
-        status.textContent = msgs.noEndpoint;
-        status.className = 'ei-form__status ei-is-error';
-        return;
-      }
-      submit.disabled = true;
-      submit.textContent = msgs.submitting;
-      fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: { Accept: 'application/json' }
-      })
-        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
-        .then(function (res) {
-          if (!res.ok) throw new Error('bad');
-          status.textContent = msgs.success;
-          status.className = 'ei-form__status ei-is-success';
-          form.reset();
-          updateWa();
-        })
-        .catch(function () {
-          status.textContent = msgs.error;
-          status.className = 'ei-form__status ei-is-error';
-        })
-        .finally(function () {
-          submit.disabled = false;
-          submit.textContent = msgs.submit;
-        });
-    });
+    radios.forEach(function (r) { r.addEventListener('change', update); });
+    update();
   })();
   `}
 </script>
@@ -267,100 +131,72 @@ const defaultWa = options[options.length - 1].wa
     margin-top: 1rem;
   }
 
-  .ei-form {
+  /* WhatsApp intent chooser */
+  .ei-wa {
     margin-top: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
-    padding: clamp(1.4rem, 1.1rem + 1.2vw, 2rem);
+    padding: clamp(1.5rem, 1.2rem + 1.4vw, 2.2rem);
     background: var(--ei-surface);
     border: 1px solid var(--ei-hairline);
     border-radius: var(--ei-radius-lg);
     box-shadow: var(--ei-shadow-sm);
   }
-  .ei-form__row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.1rem;
-  }
-  .ei-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  .ei-field label {
+  .ei-wa__label {
+    margin: 0 0 1rem;
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--ei-ink-soft);
   }
-  .ei-field input,
-  .ei-field select,
-  .ei-field textarea {
-    width: 100%;
-    padding: 0.7rem 0.85rem;
-    font: inherit;
-    color: var(--ei-ink);
-    background: var(--ei-ground);
-    border: 1px solid var(--ei-hairline-strong);
-    border-radius: var(--ei-radius-sm);
-    transition: border-color 0.2s var(--ei-ease), box-shadow 0.2s var(--ei-ease);
-  }
-  .ei-field textarea {
-    resize: vertical;
-    min-height: 96px;
-  }
-  .ei-field input:focus,
-  .ei-field select:focus,
-  .ei-field textarea:focus {
-    outline: none;
-    border-color: var(--ei-accent);
-    box-shadow: 0 0 0 3px var(--ei-accent-soft);
-  }
-  .ei-field__err {
-    margin: 0;
-    min-height: 1em;
-    font-size: 0.8rem;
-    color: #c0392b;
-  }
-  :root[data-theme='dark'] .ei-field__err {
-    color: #ff8f81;
-  }
-
-  .ei-consent {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
-    font-size: 0.9rem;
-    color: var(--ei-muted);
-    cursor: pointer;
-  }
-  .ei-consent input {
-    margin-top: 0.2rem;
-    width: 18px;
-    height: 18px;
-    accent-color: var(--ei-accent);
-    flex: 0 0 auto;
-  }
-
-  .ei-form__actions {
+  .ei-wa__chips {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
   }
-  .ei-form__status {
-    margin: 0;
+  .ei-chip {
+    cursor: pointer;
+  }
+  .ei-chip input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+  .ei-chip span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55em 1em;
+    border: 1px solid var(--ei-hairline-strong);
+    border-radius: var(--ei-radius-pill);
+    background: var(--ei-ground);
+    color: var(--ei-ink-soft);
     font-size: 0.9rem;
     font-weight: 500;
+    transition:
+      border-color 0.2s var(--ei-ease),
+      background 0.2s var(--ei-ease),
+      color 0.2s var(--ei-ease),
+      transform 0.15s var(--ei-ease-out);
   }
-  .ei-form__status.ei-is-success {
+  .ei-chip:hover span {
+    border-color: var(--ei-accent);
+    transform: translateY(-1px);
+  }
+  .ei-chip input:checked + span {
+    background: var(--ei-accent-soft);
+    border-color: var(--ei-accent);
     color: var(--ei-accent-strong);
+    font-weight: 600;
   }
-  .ei-form__status.ei-is-error {
-    color: #c0392b;
+  .ei-chip input:focus-visible + span {
+    outline: 2px solid var(--ei-focus);
+    outline-offset: 2px;
   }
-  :root[data-theme='dark'] .ei-form__status.ei-is-error {
-    color: #ff8f81;
+  .ei-wa__helper {
+    margin: 1.3rem 0 1rem;
+    color: var(--ei-muted);
+    font-size: 0.92rem;
+  }
+  .ei-wa :global(.ei-wa__cta) {
+    width: 100%;
   }
 
   /* Aside panels */
@@ -378,6 +214,10 @@ const defaultWa = options[options.length - 1].wa
     border-radius: var(--ei-radius-lg);
     box-shadow: var(--ei-shadow-sm);
   }
+  .ei-panel--accent {
+    background: var(--ei-accent-soft);
+    border-color: var(--ei-accent);
+  }
   .ei-panel h2 {
     font-size: 1.2rem;
     margin-top: 0.4rem;
@@ -386,10 +226,6 @@ const defaultWa = options[options.length - 1].wa
   .ei-panel p {
     color: var(--ei-muted);
     font-size: 0.92rem;
-  }
-  .ei-panel--wa .ei-btn {
-    margin-top: 1rem;
-    width: 100%;
   }
   .ei-panel__list {
     margin: 0.6rem 0 0;
@@ -434,11 +270,6 @@ const defaultWa = options[options.length - 1].wa
     }
     .ei-contact__aside {
       position: static;
-    }
-  }
-  @media (max-width: 560px) {
-    .ei-form__row {
-      grid-template-columns: 1fr;
     }
   }
 </style>

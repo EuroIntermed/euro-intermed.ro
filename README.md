@@ -61,13 +61,21 @@ the old `build.mjs` env templating. Set these per Vercel project:
 | `WIDGET_BASE_URL` | origin serving `widget.js` | `https://dash.euro-intermed.com` |
 | `GA_MEASUREMENT_ID` | GA4 id; empty → no GA snippet + no cookie banner | *(unset)* |
 | `SITE_URL` / `PUBLIC_SITE_URL` | canonical origin (sitemap/canonical/hreflang) | `https://euro-intermed.ro` |
-| `PUBLIC_CONTACT_FORM_ACTION` | contact-form POST endpoint (empty → WhatsApp/email fallback) | *(unset)* |
 | `PUBLIC_WHATSAPP_NUMBER` | wa.me number (digits) | `40745799995` |
 | `PUBLIC_CONTACT_EMAIL` / `PUBLIC_CONTACT_PHONE` / `PUBLIC_CALENDLY_URL` | contact details | *(company defaults)* |
 | `PUBLIC_PALLETCLEARANCE_URL` / `PUBLIC_ANGROSIST_URL` / `PUBLIC_SKALYOU_URL` | sibling vertical links | *(prod URLs)* |
 
 GA4 uses **Consent Mode v2** — analytics storage stays `denied` until the visitor
 accepts in the cookie banner (choice persisted in `localStorage['ei-analytics-consent']`).
+
+## Contact: WhatsApp-only (no forms)
+
+There is **no HTML contact form and no form-POST endpoint** anywhere on the site
+(client decision). The two intake channels are the **AI chat widget** and
+**WhatsApp** — `/contact` shows an intent chooser that pre-fills a `wa.me` message
+per B2B route, with email + phone as secondary options. This WhatsApp-only pattern
+is the **standard for all three ecosystem sites** (Euro-Intermed, Angrosist,
+PalletClearance) — do not reintroduce a contact form on any of them.
 
 ## Accessibility & motion
 
