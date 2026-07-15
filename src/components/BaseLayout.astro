@@ -16,7 +16,8 @@ import '../styles/global.css'
 import type { Locale } from '../i18n/ui'
 import { t, switchLocalePath, htmlLang, ogLocale } from '../i18n/utils'
 import {
-  siteUrl,
+  canonicalRo,
+  canonicalEn,
   analyticsEnabled,
   contactEmail,
   contactPhone,
@@ -57,14 +58,18 @@ const {
 
 const nav = t(locale).nav
 const path = Astro.url.pathname
-const canonical = new URL(path, siteUrl).href
-const roUrl = new URL(switchLocalePath(path, 'ro'), siteUrl).href
-const enUrl = new URL(switchLocalePath(path, 'en'), siteUrl).href
+// Canonical/hreflang/og origins derive from the PAGE LANGUAGE (path), not the fixed
+// build URL: EN (/en/*) → the English domain, RO (root) → the Romanian domain. This
+// makes each language self-canonicalise on its own domain (Hard Rule #1 — origins
+// are env-driven via canonicalRo / canonicalEn).
+const canonicalBase = locale === 'en' ? canonicalEn : canonicalRo
+const canonical = new URL(path, canonicalBase).href
+const roUrl = new URL(switchLocalePath(path, 'ro'), canonicalRo).href
+const enUrl = new URL(switchLocalePath(path, 'en'), canonicalEn).href
 // Branded 1200x630 social card generated at build (see src/pages/og + src/lib/og).
-// Absolute URL from the env-driven siteUrl — no hardcoded host (Hard Rule #1).
-const ogImage = new URL(`/og/${ogSlug(path, locale)}.png`, siteUrl).href
+const ogImage = new URL(`/og/${ogSlug(path, locale)}.png`, canonicalBase).href
 // Absolute logo for the Organization node (Hard Rule #1 — from env-driven origin).
-const logoUrl = new URL('/favicon.svg', siteUrl).href
+const logoUrl = new URL('/favicon.svg', canonicalBase).href
 
 // JSON-LD Organization — mirrors the confirmed data from the current site.
 const orgJsonLd = {
@@ -72,7 +77,7 @@ const orgJsonLd = {
   '@type': 'Organization',
   name: 'Euro Intermed Solutions',
   legalName: 'EURO INTERMED SOLUTIONS',
-  url: siteUrl,
+  url: canonicalBase,
   logo: logoUrl,
   email: contactEmail,
   vatID: 'RO39132147',
@@ -104,16 +109,16 @@ const siteJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'Euro Intermed Solutions',
-  url: siteUrl,
+  url: canonicalBase,
   inLanguage: htmlLang[locale],
-  publisher: { '@type': 'Organization', name: 'EURO INTERMED SOLUTIONS', url: siteUrl },
+  publisher: { '@type': 'Organization', name: 'EURO INTERMED SOLUTIONS', url: canonicalBase },
 }
 
 // Optional per-page structured data (built from env-driven absolute URLs).
 const faqJsonLd = faqItems ? faqSchema(faqItems) : null
 const breadcrumbJsonLd = breadcrumb
   ? breadcrumbSchema([
-      { name: nav.home, url: new URL(switchLocalePath('/', locale), siteUrl).href },
+      { name: nav.home, url: new URL(switchLocalePath('/', locale), canonicalBase).href },
       { name: breadcrumb, url: canonical },
     ])
   : null
@@ -152,7 +157,7 @@ const breadcrumbJsonLd = breadcrumb
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="ro" href={roUrl} />
     <link rel="alternate" hreflang="en" href={enUrl} />
-    <link rel="alternate" hreflang="x-default" href={roUrl} />
+    <link rel="alternate" hreflang="x-default" href={enUrl} />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
