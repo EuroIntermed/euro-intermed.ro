@@ -5,20 +5,108 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/terms", "destination": "/termeni", "permanent": true },
-    { "source": "/terms.html", "destination": "/termeni", "permanent": true },
-    { "source": "/tos", "destination": "/termeni", "permanent": true },
-    { "source": "/privacy", "destination": "/confidentialitate", "permanent": true },
-    { "source": "/privacy.html", "destination": "/confidentialitate", "permanent": true },
-    { "source": "/data-deletion", "destination": "/gdpr", "permanent": true }
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": ".*\\.(com|it|pl)$"
+        }
+      ],
+      "destination": "/en",
+      "permanent": false
+    },
+    {
+      "source": "/contact",
+      "has": [
+        {
+          "type": "host",
+          "value": ".*\\.(com|it|pl)$"
+        }
+      ],
+      "destination": "/en/contact",
+      "permanent": false
+    },
+    {
+      "source": "/termeni",
+      "has": [
+        {
+          "type": "host",
+          "value": ".*\\.(com|it|pl)$"
+        }
+      ],
+      "destination": "/en/termeni",
+      "permanent": false
+    },
+    {
+      "source": "/confidentialitate",
+      "has": [
+        {
+          "type": "host",
+          "value": ".*\\.(com|it|pl)$"
+        }
+      ],
+      "destination": "/en/confidentialitate",
+      "permanent": false
+    },
+    {
+      "source": "/gdpr",
+      "has": [
+        {
+          "type": "host",
+          "value": ".*\\.(com|it|pl)$"
+        }
+      ],
+      "destination": "/en/gdpr",
+      "permanent": false
+    },
+    {
+      "source": "/terms",
+      "destination": "/termeni",
+      "permanent": true
+    },
+    {
+      "source": "/terms.html",
+      "destination": "/termeni",
+      "permanent": true
+    },
+    {
+      "source": "/tos",
+      "destination": "/termeni",
+      "permanent": true
+    },
+    {
+      "source": "/privacy",
+      "destination": "/confidentialitate",
+      "permanent": true
+    },
+    {
+      "source": "/privacy.html",
+      "destination": "/confidentialitate",
+      "permanent": true
+    },
+    {
+      "source": "/data-deletion",
+      "destination": "/gdpr",
+      "permanent": true
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
       ]
     }
   ]
