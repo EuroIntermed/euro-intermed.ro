@@ -102,6 +102,13 @@
   --ei-surface-contrast: #10231a; /* dark green band */
   --ei-on-contrast-muted: #a9bcb0;
   --ei-eyebrow-band: #c9a84c;
+
+  /* ---- LANDING gradients (accent-driven; resolve per-theme lazily) --------
+     var() inside a custom property is substituted at use-time, so these three
+     tokens pick up whatever --ei-accent* / --ei-gold* resolve to in the current
+     theme + vertical. Defined once; correct in light AND dark. */
+  --ei-grad: linear-gradient(128deg, var(--ei-accent-strong), var(--ei-accent));
+  --ei-grad-text: linear-gradient(120deg, var(--ei-accent-text), var(--ei-gold-strong));
 }
 
 /* ---- ACCENT LAYER: ANGROSIST (teal-blue + azure), LIGHT --------------- */

@@ -34,6 +34,7 @@ const ro = {
     lead: 'Vinzi stoc, cauți furnizori sau intri pe piața din România? Îți calificăm nevoia și te conectăm — pe WhatsApp, în minute.',
     primary: 'Începe pe WhatsApp',
     secondary: 'Vezi ecosistemul',
+    trustChips: ['Firmă reală · CUI 39132147', 'GDPR · date în UE', 'Verificare firmă live'],
     whatsapp: 'Scrie-ne pe WhatsApp',
     whatsappText:
       'Buna ziua. Am o oportunitate B2B si vreau sa discut cu Euro Intermed. Detalii: ___',
@@ -48,6 +49,15 @@ const ro = {
       readymeal: { tag: 'Mese ready-made', name: 'Ready-Meal' },
       skalyou: { tag: 'În dezvoltare', name: 'SkalYou' },
     },
+  },
+  stats: {
+    eyebrow: 'Ecosistemul în cifre',
+    items: [
+      { value: '1.320+', label: 'produse în catalogul Angrosist' },
+      { value: '13', label: 'categorii de produse' },
+      { value: '4', label: 'verticale B2B' },
+      { value: '24–48h', label: 'timp mediu de răspuns' },
+    ],
   },
   value: {
     eyebrow: 'De ce Euro Intermed',
@@ -304,6 +314,7 @@ const en: typeof ro = {
     lead: 'Selling stock, sourcing suppliers, or entering the Romanian market? We qualify your need and connect you — on WhatsApp, in minutes.',
     primary: 'Start on WhatsApp',
     secondary: 'See the ecosystem',
+    trustChips: ['Real company · VAT 39132147', 'GDPR · data in the EU', 'Live company verification'],
     whatsapp: 'Message us on WhatsApp',
     whatsappText:
       'Hello. I have a B2B opportunity and would like to talk to Euro Intermed. Details: ___',
@@ -318,6 +329,15 @@ const en: typeof ro = {
       readymeal: { tag: 'Ready meals', name: 'Ready-Meal' },
       skalyou: { tag: 'In development', name: 'SkalYou' },
     },
+  },
+  stats: {
+    eyebrow: 'The ecosystem in numbers',
+    items: [
+      { value: '1,320+', label: 'products in the Angrosist catalog' },
+      { value: '13', label: 'product categories' },
+      { value: '4', label: 'B2B verticals' },
+      { value: '24–48h', label: 'average response time' },
+    ],
   },
   value: {
     eyebrow: 'Why Euro Intermed',
