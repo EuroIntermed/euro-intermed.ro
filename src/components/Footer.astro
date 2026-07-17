@@ -11,8 +11,8 @@ const { locale } = Astro.props as { locale: Locale }
 const f = t(locale).footer
 const legalPaths =
   locale === 'ro'
-    ? { privacy: '/confidentialitate', terms: '/termeni', gdpr: '/gdpr' }
-    : { privacy: '/confidentialitate', terms: '/termeni', gdpr: '/gdpr' }
+    ? { privacy: '/confidentialitate', cookies: '/cookies', terms: '/termeni', gdpr: '/gdpr' }
+    : { privacy: '/confidentialitate', cookies: '/cookies', terms: '/termeni', gdpr: '/gdpr' }
 const lp = (p: string) => localizePath(p, locale)
 ---
 
@@ -39,9 +39,9 @@ const lp = (p: string) => localizePath(p, locale)
     <div class="ei-footer__col">
       <h2>{f.legal}</h2>
       <a href={lp(legalPaths.privacy)}>{f.privacy}</a>
+      <a href={lp(legalPaths.cookies)}>{f.cookies}</a>
       <a href={lp(legalPaths.terms)}>{f.terms}</a>
       <a href={lp(legalPaths.gdpr)}>{f.gdpr}</a>
-      <p class="ei-footer__note">{f.legalNote}</p>
     </div>
 
     <div class="ei-footer__col">
