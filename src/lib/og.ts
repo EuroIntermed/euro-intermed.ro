@@ -64,6 +64,14 @@ export const ogCards: Record<string, OgCard> = {
     title: BRAND,
     description: 'Contact — on WhatsApp or with the AI assistant',
   },
+  despre: {
+    title: BRAND,
+    description: 'Despre noi — povestea Euro Intermed Solutions, din 2015 până azi',
+  },
+  'despre-en': {
+    title: BRAND,
+    description: 'About us — the Euro Intermed Solutions story, from 2015 to today',
+  },
 }
 
 /**
@@ -76,6 +84,7 @@ export function ogSlug(path: string, locale: Locale): string {
   const p = path.replace(/^\/en(?=\/|$)/, '').replace(/\/$/, '') || '/'
   const en = locale === 'en'
   if (p === '/contact') return en ? 'contact-en' : 'contact'
+  if (p === '/despre') return en ? 'despre-en' : 'despre'
   // Home + any other page (legal, 404, ...) → brand card.
   return en ? 'home-en' : 'default'
 }

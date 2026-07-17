@@ -9,6 +9,7 @@ import { verticalUrls, contactEmail, contactPhone, waLink } from '../lib/config'
 
 const { locale } = Astro.props as { locale: Locale }
 const f = t(locale).footer
+const aboutLabel = t(locale).about.navLabel
 const legalPaths =
   locale === 'ro'
     ? { privacy: '/confidentialitate', cookies: '/cookies', terms: '/termeni', gdpr: '/gdpr' }
@@ -24,6 +25,7 @@ const lp = (p: string) => localizePath(p, locale)
         <img class="ei-brand__logo ei-brand__logo--dark" src="/brand/logo-white.png" alt="" aria-hidden="true" width={623} height={160} />
       </a>
       <p class="ei-footer__tag">{f.tagline}</p>
+      <a class="ei-footer__about-link" href={lp('/despre')}>{aboutLabel} &rarr;</a>
     </div>
 
     <div class="ei-footer__col">
@@ -75,6 +77,17 @@ const lp = (p: string) => localizePath(p, locale)
     margin-top: 1rem;
     color: var(--ei-muted);
     font-size: 0.92rem;
+  }
+  .ei-footer__about-link {
+    display: inline-block;
+    margin-top: 0.9rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ei-accent-strong);
+    transition: color 0.2s var(--ei-ease);
+  }
+  .ei-footer__about-link:hover {
+    text-decoration: underline;
   }
   .ei-footer__col {
     display: flex;

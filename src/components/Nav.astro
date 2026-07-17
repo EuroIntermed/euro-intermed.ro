@@ -14,6 +14,8 @@ const { locale } = Astro.props as { locale: Locale }
 const nav = t(locale).nav
 const home = localizePath('/', locale)
 const contact = localizePath('/contact', locale)
+const about = localizePath('/despre', locale)
+const aboutLabel = t(locale).about.navLabel
 
 // Section anchors live on the home page; prefix with the home path so they work
 // from any page (e.g. /en/#ecosystem, /contact links back to home sections).
@@ -46,6 +48,7 @@ const anchors = [
     <nav class="ei-nav__menu" id="ei-nav-menu" aria-label="Primary" data-menu>
       <div class="ei-nav__links">
         {anchors.map((a) => <a href={a.href}>{a.label}</a>)}
+        <a href={about}>{aboutLabel}</a>
         <a href={contact}>{nav.contact}</a>
       </div>
       <div class="ei-nav__tools">
